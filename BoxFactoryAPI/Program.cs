@@ -1,20 +1,34 @@
+using System.Data;
 using Core;
 using Infrastructure;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+builder.Services.AddSingleton<IDbConnection>(container =>
+{
+    var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("box_conn"));
+    connection.Open();
+    return connection;
+});
 
 builder.Services.AddScoped<BoxRepository>();
 builder.Services.AddScoped<BoxService>();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors(options =>
+{
+    options.SetIsOriginAllowed(origin => true)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
