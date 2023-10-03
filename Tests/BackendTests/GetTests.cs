@@ -39,8 +39,7 @@ public class GetTests
                 }
             };
             expectedBoxes.Add(box);
-            var sql = $@" 
-            insert into testing.Boxes () VALUES ();"; //TODO add sql
+            var sql = $@""; //TODO add sql
             await using var conn = await Helper.DataSource.OpenConnectionAsync();
             await conn.ExecuteAsync(sql, box);
         }
@@ -58,8 +57,7 @@ public class GetTests
         {
             throw new Exception(e.Message, e.InnerException);
         }
-
-
+        
         IEnumerable<Box> dbBoxes;
         try
         {
@@ -82,6 +80,7 @@ public class GetTests
             expectedBoxes.Should().BeEquivalentTo(dbBoxList, options => options.Excluding(b => b.Id));
         }
     }
+    
     
     [Test]
     [TestCase(20, "red", "cardboard", 9, 20, 20, 10)]

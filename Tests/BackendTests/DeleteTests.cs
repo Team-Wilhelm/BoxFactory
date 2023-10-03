@@ -1,9 +1,7 @@
-﻿using System.Net.Http.Json;
-using Dapper;
+﻿using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
-using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
 
@@ -61,7 +59,7 @@ public class DeleteTests
         {
             await using (var conn = await Helper.DataSource.OpenConnectionAsync())
             {
-                (conn.ExecuteScalar<int>($"SELECT COUNT(*) FROM testing WHERE boxId = 1;") == 0) //TODO add correct sql
+                (conn.ExecuteScalar<int>($"") == 0) //TODO add correct sql
                     .Should()
                     .BeTrue();
             }
