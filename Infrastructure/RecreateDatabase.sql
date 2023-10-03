@@ -37,7 +37,7 @@ BEGIN
 
     EXECUTE 'CREATE TABLE IF NOT EXISTS ' || schema_to_create || '."Addresses" (' ||
             '"address_id" uuid PRIMARY KEY, ' ||
-            '"street_name" varchar(25), ' ||
+            '"street_name" varchar, ' ||
             '"house_number" integer, ' ||
             '"house_number_addition" varchar(10), ' ||
             '"city" varchar, ' ||
