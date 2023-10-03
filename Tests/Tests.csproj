@@ -20,8 +20,11 @@
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
     </ItemGroup>
 
+<<<<<<< HEAD
     <ItemGroup>
         <ProjectReference Include="..\Models\Models.csproj" />
     </ItemGroup>
 
+=======
+>>>>>>> main
 </Project>
