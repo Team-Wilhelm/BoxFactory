@@ -25,19 +25,7 @@ public class GetTests
         var expectedBoxes = new List<BoxCreateDto>();
         for (int i = 0; i < 10; i++)
         {
-            var box = new BoxCreateDto()
-            {
-                Weight = i+1,
-                Colour = "red",
-                Material = "cardboard",
-                Price = i+100,
-                Dimensions = new Dimensions()
-                {
-                    Height = i+20,
-                    Length = i+20,
-                    Width = i+10
-                }
-            };
+            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i);
             expectedBoxes.Add(box);
             var sql = $@""; //TODO add sql
             await using var conn = await Helper.DataSource.OpenConnectionAsync();
@@ -88,36 +76,57 @@ public class GetTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = new BoxCreateDto()
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
+        
+        var url = "http://localhost:ADD_ME"; //TODO add url
+        // Act
+        HttpResponseMessage response;
+        try
         {
-            Weight = weight,
-            Colour = colour,
-            Material = material,
-            Price = price,
-            Dimensions = new Dimensions()
-            {
-                Height = height,
-                Length = length,
-                Width = width
-            }
-        };
+            response = await _httpClient.PostAsJsonAsync(url, box);
+            TestContext.WriteLine("THE FULL BODY RESPONSE: " + await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
+        
+        Box responseBox;
+        try
+        {
+            responseBox = JsonConvert.DeserializeObject<Box>(
+                await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
         // Act
+
+        var boxId = responseBox.Id;
+        url = "http://localhost:ADD_ME"; //TODO add url with boxId
+        try
+        {
+            response = await _httpClient.GetAsync(url);
+            TestContext.WriteLine("THE FULL BODY RESPONSE: " + await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
+        
+        Box dbBox;
+        try
+        {
+            dbBox = JsonConvert.DeserializeObject<Box>(
+                await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
         
         // Assert
-
+        box.Should().BeEquivalentTo(dbBox, options => options.Excluding(b => b.Id));
     }
-
-    [Test]
-    public async Task GetAllBoxesPaginated()
-    {
-        // Add large number of boxes
-        //check if pagination limit works
-        // Arrange
-        Helper.TriggerRebuild();
-        // Act
-        
-        // Assert
-
-    }
-    
 }

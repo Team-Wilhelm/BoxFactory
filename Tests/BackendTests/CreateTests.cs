@@ -23,19 +23,8 @@ public class CreateTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = new BoxCreateDto()
-        {
-            Weight = weight,
-            Colour = colour,
-            Material = material,
-            Price = price,
-            Dimensions = new Dimensions()
-            {
-                Height = height,
-                Length = length,
-                Width = width
-            }
-        };
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
+        
         var url = "http://localhost:ADD_ME"; //TODO add url
         // Act
         HttpResponseMessage response;
@@ -74,19 +63,7 @@ public class CreateTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = new BoxCreateDto()
-        {
-            Weight = weight,
-            Colour = colour,
-            Material = material,
-            Price = price,
-            Dimensions = new Dimensions()
-            {
-                Height = height,
-                Length = length,
-                Width = width
-            }
-        };
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
         var url = "http://localhost:ADD_ME"; //TODO add url
         
         // Act

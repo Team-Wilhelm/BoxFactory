@@ -19,14 +19,26 @@ public class UpdateTests
     
         
     [Test]
-    public async Task UpdateBox()
+    public async Task UpdateBoxSuccessfully()
     {
         // Arrange
-        Helper.TriggerRebuild();
+
+        // Act
+        
+        // Assert
+        throw new NotImplementedException();
+
+    }
+    
+    [Test]
+    public async Task UpdateBoxFailed()
+    {
+        // Arrange
         
         // Act
         
         // Assert
+        throw new NotImplementedException();
         
     }
 }
