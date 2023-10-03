@@ -2,6 +2,7 @@ namespace Models;
 
 public class Dimensions
 {
+    public Guid Id { get; set; }
     public float Length { get; set; }
     public float Width { get; set; }
     public float Height { get; set; }
