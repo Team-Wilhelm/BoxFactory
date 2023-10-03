@@ -1,15 +1,18 @@
-﻿using Infrastructure;
+﻿using AutoMapper;
+using Infrastructure;
 using Models;
 
-namespace Core;
+namespace Core.Services;
 
 public class BoxService
 {
     private readonly BoxRepository _boxRepository;
+    private readonly IMapper _mapper;
 
-    public BoxService(BoxRepository boxRepository)
+    public BoxService(BoxRepository boxRepository, IMapper mapper)
     {
         _boxRepository = boxRepository;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<Box>> Get()
@@ -24,7 +27,9 @@ public class BoxService
     
     public async Task<Box> Create(BoxCreateDto boxCreateDto)
     {
-        return await _boxRepository.Create(boxCreateDto);
+        var box = _mapper.Map<Box>(boxCreateDto);
+        box.CreatedAt = DateTime.Now;
+        return await _boxRepository.Create(box);
     }
     
     public async Task<Box> Update(Guid id, BoxUpdateDto boxUpdateDto)

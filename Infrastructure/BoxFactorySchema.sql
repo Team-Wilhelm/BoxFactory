@@ -3,7 +3,7 @@ CREATE SCHEMA testing;
 
 CREATE TABLE IF NOT EXISTS testing.Dimensions
 (
-    "dimensions_id" uuid PRIMARY KEY,
+    "dimensions_id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "length"        float,
     "width"         float,
     "height"        float
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS testing.Dimensions
 
 CREATE TABLE IF NOT EXISTS testing.Boxes
 (
-    "box_id"        uuid PRIMARY KEY,
+    "box_id"        uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "weight"        float,
     "colour"        varchar(25),
     "material"      varchar(25),
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS testing.Boxes
 
 CREATE TABLE IF NOT EXISTS testing.Customers
 (
-    "customer_id"  uuid PRIMARY KEY,
+    "customer_id"  uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "email"        varchar,
     "phone_number" varchar(20),
     "first_name"   varchar(25),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS testing.Customers
 
 CREATE TABLE IF NOT EXISTS testing.Addresses
 (
-    "address_id"            uuid PRIMARY KEY,
+    "address_id"            uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "street_name"           varchar,
     "house_number"          integer,
     "house_number_addition" varchar(10),
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS testing.Addresses
 
 CREATE TABLE IF NOT EXISTS testing.Orders
 (
-    "order_id"    uuid PRIMARY KEY,
+    "order_id"    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "status"      varchar(25),
     "created_at"  timestamp,
     "updated_at"  timestamp,
