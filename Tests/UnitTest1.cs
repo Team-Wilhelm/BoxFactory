@@ -163,7 +163,81 @@ public class Tests
     [Test]
     public async Task GetAllBoxes()
     {
+        // Arrange
+        Helper.TriggerRebuild();
+        var expectedBoxes = new List<BoxCreateDto>();
+        for (int i = 0; i < 10; i++)
+        {
+            var box = new BoxCreateDto()
+            {
+                Weight = i+1,
+                Colour = "red",
+                Material = "cardboard",
+                Price = i+100,
+                Dimensions = new Dimensions()
+                {
+                    Height = i+20,
+                    Length = i+20,
+                    Width = i+10
+                }
+            };
+            expectedBoxes.Add(box);
+            var sql = $@" 
+            insert into testing.Boxes () VALUES ();"; //TODO add sql
+            using (var conn = Helper.DataSource.OpenConnection())
+            {
+                conn.Execute(sql, box);
+            }
+        }
+        
+        // Act
+        var url = "http://localhost:ADD_ME"; //TODO add url
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.GetAsync(url);
+            TestContext.WriteLine("THE FULL BODY RESPONSE: " + await response.Content.ReadAsStringAsync());
+
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
+
+
+        IEnumerable<Box> dbBoxes;
+        try
+        {
+            dbBoxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(await response.Content.ReadAsStringAsync()) ??
+                      throw new InvalidOperationException();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
+        
+        // Assert
+        using (new AssertionScope())
+        {
+            var dbBoxList = dbBoxes.ToList();
+            foreach (var box in dbBoxList.ToList())
+            {
+                response.IsSuccessStatusCode.Should().BeTrue();
+            }
+            expectedBoxes.Should().BeEquivalentTo(dbBoxList, options => options.Excluding(b => b.Id));
+        }
+    }
+    
+    [Test]
+    public async Task GetBoxById()
+    {
         // Add and retrieve boxes
+        // Arrange
+        Helper.TriggerRebuild();
+        // Act
+        
+        // Assert
+
     }
 
     [Test]
@@ -171,18 +245,36 @@ public class Tests
     {
         // Add large number of boxes
         //check if pagination limit works
+        // Arrange
+        Helper.TriggerRebuild();
+        // Act
+        
+        // Assert
+
     }
     
     [Test]
     public async Task SearchBox()
     {
         // Search for boxes with parameters
+        // Arrange
+        Helper.TriggerRebuild();
+        // Act
+        
+        // Assert
+
     }
     
     
     [Test]
     public async Task UpdateBox()
     {
-        // 
+        // Arrange
+        Helper.TriggerRebuild();
+        
+        // Act
+        
+        // Assert
+        
     }
 }
