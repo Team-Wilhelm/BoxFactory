@@ -19,14 +19,13 @@ public class OrderRepository
     
     public async Task<Order> Create(Order orderToCreate)
     {
-        // TODO transactions
         using var transaction = _dbConnection.BeginTransaction();
         try
         {
-            var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street, house_number, house_number_addition, city, postal_code, country)) 
-                                    VALUES (@Street, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
+            var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street_name, house_number, house_number_addition, city, postal_code, country)) 
+                                    VALUES (@StreetName, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
                                     RETURNING address_id";
-            var address = orderToCreate.Customer.Address;
+            var address = orderToCreate.Customer!.Address!;
             var addressId = await _dbConnection.QuerySingleAsync<Guid>(insertAddressSql, new
             {
                 address.StreetName, 
@@ -72,12 +71,16 @@ public class OrderRepository
                 AddressId = addressId
             }, transaction);
         
-            foreach (var boxId in orderToCreate.Boxes)
+            foreach (var box in orderToCreate.Boxes!)
             {
-                var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id) 
-                                    VALUES (@BoxId, @OrderId)";
-                await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new {BoxId = boxId, OrderId = order.Id}, transaction);
+                var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id, quantity) 
+                                    VALUES (@BoxId, @OrderId, @Quantity)";
+                await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new
+                {
+                    BoxId = box.Key, OrderId = order.Id, box.Value
+                }, transaction);
             }
+            
             transaction.Commit();
             return order;
         }
@@ -90,8 +93,26 @@ public class OrderRepository
     }
     
     // Get all orders
-    // Get received orders
-    // Get preparing orders
+    public async Task<IEnumerable<Order>> Get()
+    {
+        throw new NotImplementedException();
+    }
+    
+    // Get received preparing orders
+    public async Task<IEnumerable<Order>> GetByStatus(ShippingStatus status)
+    {
+        throw new NotImplementedException();
+    }
+    
     // Update shipping status
+    public async Task<Order> UpdateStatus(Order orderToUpdate)
+    {
+        throw new NotImplementedException();
+    }
+    
     // Delete order if received
+    public async Task Delete(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

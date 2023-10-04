@@ -20,10 +20,10 @@ public class OrderService
         var order = _mapper.Map<Order>(orderCreateDto);
         order.CreatedAt = DateTime.Now;
         order.UpdatedAt = DateTime.Now;
-        if (order.Boxes != null && order.Boxes.Count != 0)
+        if (order.Boxes != null && order.Boxes.Count != 0 && order.Customer is { Address: not null })
         {
             return await _orderRepository.Create(order);
         }
-        throw new Exception("No boxes in order");
+        throw new Exception("Missing data to create order.");
     }
 }
