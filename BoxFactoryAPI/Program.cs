@@ -16,7 +16,9 @@ builder.Services.AddSingleton<IDbConnection>(container =>
 });
 
 builder.Services.AddScoped<BoxRepository>();
+builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<BoxService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
