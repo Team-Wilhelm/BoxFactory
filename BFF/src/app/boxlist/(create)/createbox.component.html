@@ -1,0 +1,71 @@
+<dialog id="create_box" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+
+      <div class="flex flex-col">
+        <div class="prose">
+          <h2>
+            Create new Box:
+          </h2>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Weight:</span>
+          </label>
+          <input type="number" placeholder="Enter weight" class="input input-bordered w-full"
+                 id="weight" name="weight" [(ngModel)]="box.weight" required/>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Colour:</span>
+          </label>
+          <input type="text" placeholder="Enter colour" class="input input-bordered w-full"
+                 id="colour" name="colour" [(ngModel)]="box.colour"/>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Material:</span>
+          </label>
+          <input type="text" placeholder="Enter material" class="input input-bordered w-full"
+                 id="material" name="material" [(ngModel)]="box.material"/>
+        </div>
+
+        <div class="divider">Dimensions</div>
+
+        <div class="flex gap-3 mb-3">
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Length:</span>
+            </label>
+            <input type="number" placeholder="Enter length" class="input input-bordered w-full"
+                   id="length" name="length" [(ngModel)]="dimensions.length" required/>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Width:</span>
+            </label>
+            <input type="number" placeholder="Enter width" class="input input-bordered w-full"
+                   id="width" name="width" [(ngModel)]="dimensions.width" required/>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Height:</span>
+            </label>
+            <input type="number" placeholder="Enter height" class="input input-bordered w-full"
+                   id="height" name="height" [(ngModel)]="dimensions.height" required/>
+          </div>
+
+        </div>
+
+        <button class="btn btn-primary" type="submit" (click)="onCreateBox()">Create New</button>
+      </div>
+    </form>
+  </div>
+</dialog>
