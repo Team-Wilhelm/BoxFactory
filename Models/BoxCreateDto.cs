@@ -7,4 +7,5 @@ public class BoxCreateDto
     public string? Material { get; set; }
     public DimensionsDto? DimensionsDto { get; set; }
     public int Stock { get; set; }
+    public float Price { get; set; }
 }
