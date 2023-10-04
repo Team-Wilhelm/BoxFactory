@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
@@ -18,14 +17,14 @@ public class CreateTests
     }
 
     [Test]
-    [TestCase(20, "red", "cardboard", 100, 20, 20, 10)]
-    public async Task CreateBoxSuccessfully(float weight, string colour, string material, float price, float height, float length, float width)
+    [TestCase(20, "red", "cardboard", 100, 10, 20, 20, 10)]
+    public async Task CreateBoxSuccessfully(float weight, string colour, string material, float price, int stock, float height, float length, float width)
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, stock, height, length, width);
         
-        var url = "http://localhost:ADD_ME"; //TODO add url
+        var url = Helper.UrlBase + "/box";
         // Act
         HttpResponseMessage response;
         try
@@ -53,18 +52,29 @@ public class CreateTests
         using (new AssertionScope())
         {
             response.IsSuccessStatusCode.Should().BeTrue();
-            box.Should().BeEquivalentTo(responseBox, options => options.Excluding(b => b.Id));
+            
+            box.Should().BeEquivalentTo(responseBox, options =>
+            {
+                return options
+                    .Excluding(b => b.Id)
+                    .Excluding(b => b.Dimensions)
+                    .Excluding(b => b.CreatedAt);
+            });
+            
+            box.DimensionsDto.Length.Should().Be(responseBox.Dimensions.Length);
+            box.DimensionsDto.Width.Should().Be(responseBox.Dimensions.Width);
+            box.DimensionsDto.Height.Should().Be(responseBox.Dimensions.Height);
         }
     }
 
     [Test]
-    [TestCase(20, "red", "cardboard", 9, 20, 20, 10)] //TODO Add bad data here
-    public async Task CreateBoxBadData(float weight, string colour, string material, float price, float height, float length, float width)
+    [TestCase(20, "red", "cardboard", 9, -5,20, 20, 10)] //TODO Add bad data here
+    public async Task CreateBoxBadData(float weight, string colour, string material, float price, int stock, float height, float length, float width)
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
-        var url = "http://localhost:ADD_ME"; //TODO add url
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, stock, height, length, width);
+        var url = Helper.UrlBase + "/box";
         
         // Act
         HttpResponseMessage response;

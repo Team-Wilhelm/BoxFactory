@@ -21,28 +21,42 @@ public class DeleteTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = new BoxCreateDto()
-        {
-            Weight = weight,
-            Colour = colour,
-            Material = material,
-            Price = price,
-            Dimensions = new Dimensions()
-            {
-                Height = height,
-                Length = length,
-                Width = width
-            }
-        };
+        var boxDto = Helper.CreateBoxCreateDto(weight, colour, material, price, 1, height, length, width);
         
-        var sql = $@""; //TODO add sql
-        await using (var conn = await Helper.DataSource.OpenConnectionAsync())
+        // Insert dimensions
+        var sql = $@"INSERT INTO testing.dimensions (length, width, height) 
+                        VALUES (@Length, @Width, @Height) 
+                        RETURNING 
+                            dimensions_id AS {nameof(Dimensions.Id)},
+                            length AS {nameof(Dimensions.Length)},
+                            height AS {nameof(Dimensions.Height)},
+                            width AS {nameof(Dimensions.Width)}";
+        var dimensions = await Helper.DbConnection.QuerySingleAsync<Dimensions>(sql, boxDto.DimensionsDto);
+
+        // Insert the box and link it to the dimensions, set the box's dimensions to the dimensions object
+        sql = @$"INSERT INTO testing.boxes (weight, colour, material, price, created_at, stock, dimensions_id) 
+                    VALUES (@Weight, @Colour, @Material, @Price, NOW(), @Stock, @DimensionsId)
+                    RETURNING
+                        weight AS {nameof(Box.Weight)},
+                        colour AS {nameof(Box.Colour)},
+                        material AS {nameof(Box.Material)},
+                        price AS {nameof(Box.Price)},
+                        created_at AS {nameof(Box.CreatedAt)},
+                        stock AS {nameof(Box.Stock)},
+                        box_id AS {nameof(Box.Id)};";
+        var box = await Helper.DbConnection.QuerySingleAsync<Box>(sql, new
         {
-            await conn.ExecuteAsync(sql, box);
-        }
+            boxDto.Weight,
+            boxDto.Colour,
+            boxDto.Material,
+            boxDto.Price,
+            boxDto.Stock,
+            DimensionsId = dimensions.Id
+        });
+        box.Dimensions = dimensions;
         
         // Act
-        var url = "http://localhost:ADD_ME"; //TODO add url
+        var url = Helper.UrlBase + $"/box/{box.Id}";
         HttpResponseMessage response; 
         try
         {
@@ -57,12 +71,8 @@ public class DeleteTests
         // Assert
         using (new AssertionScope())
         {
-            await using (var conn = await Helper.DataSource.OpenConnectionAsync())
-            {
-                (conn.ExecuteScalar<int>($"") == 0) //TODO add correct sql
-                    .Should()
-                    .BeTrue();
-            }
+            sql = $"SELECT * FROM testing.boxes WHERE box_id = '{box.Id}';";
+            await Helper.DbConnection.ExecuteAsync(sql, box.Id);
             response.IsSuccessStatusCode.Should().BeTrue();
         }
     }

@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using Models;
 using Npgsql;
 
@@ -6,9 +7,16 @@ namespace Tests;
 
 public static class Helper
 {
-    public static readonly NpgsqlDataSource DataSource;
-    
-    public static BoxCreateDto CreateBoxCreateDto(float weight, string colour, string material, float price, float height, float length, float width)
+    public static readonly IDbConnection DbConnection;
+    public const string UrlBase = "http://localhost:5133";
+
+    static Helper()
+    {
+        DbConnection = new NpgsqlConnection(Environment.GetEnvironmentVariable("box_conn"));
+        DbConnection.Open();
+    }
+
+    public static BoxCreateDto CreateBoxCreateDto(float weight, string colour, string material, float price, int stock, float height, float length, float width)
     {
         return new BoxCreateDto()
         {
@@ -16,7 +24,8 @@ public static class Helper
             Colour = colour,
             Material = material,
             Price = price,
-            Dimensions = new Dimensions()
+            Stock = stock,
+            DimensionsDto = new DimensionsDto()
             {
                 Height = height,
                 Length = length,
@@ -26,10 +35,9 @@ public static class Helper
     }
     public static void TriggerRebuild()
     {
-        using var conn = DataSource.OpenConnection();
         try
         {
-            conn.Execute(RebuildScript);
+            DbConnection.Execute(RebuildScript);
         }
         catch (Exception e)
         {
@@ -38,14 +46,82 @@ public static class Helper
     }
 
     //TODO add script
-     public static string RebuildScript = @"
-DROP SCHEMA IF EXISTS /*schema*/ CASCADE;
-CREATE SCHEMA /*schema*/;
-create table if not exists /*schema.table*/
+     private static string RebuildScript = @"
+DROP SCHEMA IF EXISTS testing CASCADE;
+CREATE SCHEMA testing;
+
+CREATE TABLE IF NOT EXISTS testing.Dimensions
 (
-    /**/
+    dimensions_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    length        float,
+    width         float,
+    height        float
+);
+
+CREATE TABLE IF NOT EXISTS testing.Boxes
+(
+    box_id        uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    weight        float,
+    colour        varchar(25),
+    material      varchar(25),
+    price         float,
+    created_at    timestamp,
+    stock         integer,
+    dimensions_id uuid REFERENCES testing.Dimensions (dimensions_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS testing.Customers
+(
+    customer_id  uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email        varchar,
+    phone_number varchar(20),
+    first_name   varchar(25),
+    last_name    varchar
+);
+
+CREATE TABLE IF NOT EXISTS testing.Addresses
+(
+    address_id            uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    street_name           varchar,
+    house_number          integer,
+    house_number_addition varchar(10),
+    city                  varchar,
+    postal_code           varchar(10),
+    country               varchar(25)
+);
+
+CREATE TABLE IF NOT EXISTS testing.Orders
+(
+    order_id    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    status      varchar(25),
+    created_at  timestamp,
+    updated_at  timestamp,
+    customer_id uuid REFERENCES testing.Customers (customer_id),
+    address_id  uuid REFERENCES testing.Addresses (address_id)
+);
+
+CREATE TABLE IF NOT EXISTS testing.Box_Order_Link
+(
+    PRIMARY KEY (
+        box_id,
+        order_id
+    ),
+    box_id   uuid REFERENCES testing.Boxes (box_id),
+    order_id uuid REFERENCES testing.Orders (order_id),
+    quantity integer
+);
+
+CREATE TABLE IF NOT EXISTS testing.Customer_Address_Link
+(
+    PRIMARY KEY (
+        customer_id,
+        address_id
+    ),
+    customer_id uuid REFERENCES testing.Customers (customer_id),
+    address_id  uuid REFERENCES testing.Addresses (address_id)
 );
  ";
+     
     
      
 }

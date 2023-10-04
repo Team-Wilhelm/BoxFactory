@@ -25,11 +25,10 @@ public class GetTests
         var expectedBoxes = new List<BoxCreateDto>();
         for (int i = 0; i < 10; i++)
         {
-            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i);
+            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             expectedBoxes.Add(box);
             var sql = $@""; //TODO add sql
-            await using var conn = await Helper.DataSource.OpenConnectionAsync();
-            await conn.ExecuteAsync(sql, box);
+            await Helper.DbConnection.ExecuteAsync(sql, box);
         }
         
         // Act
@@ -76,7 +75,7 @@ public class GetTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, height, length, width);
+        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, 1, height, length, width);
         
         var url = "http://localhost:ADD_ME"; //TODO add url
         // Act
