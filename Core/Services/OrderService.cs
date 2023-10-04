@@ -20,10 +20,23 @@ public class OrderService
         var order = _mapper.Map<Order>(orderCreateDto);
         order.CreatedAt = DateTime.Now;
         order.UpdatedAt = DateTime.Now;
-        if (order.Boxes != null && order.Boxes.Count != 0)
+        if (order.Boxes != null && order.Boxes.Count != 0 && order.Customer is { Address: not null })
         {
             return await _orderRepository.Create(order);
         }
-        throw new Exception("No boxes in order");
+        throw new Exception("Missing data to create order.");
+    }
+    
+    public async Task<IEnumerable<Order>> Get()
+    {
+        try
+        {
+            return await _orderRepository.Get();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Something went wrong while fetching orders.");
+        }
     }
 }

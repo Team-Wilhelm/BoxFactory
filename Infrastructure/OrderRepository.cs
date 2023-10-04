@@ -19,14 +19,13 @@ public class OrderRepository
     
     public async Task<Order> Create(Order orderToCreate)
     {
-        // TODO transactions
         using var transaction = _dbConnection.BeginTransaction();
         try
         {
-            var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street, house_number, house_number_addition, city, postal_code, country)) 
-                                    VALUES (@Street, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
+            var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street_name, house_number, house_number_addition, city, postal_code, country)) 
+                                    VALUES (@StreetName, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
                                     RETURNING address_id";
-            var address = orderToCreate.Customer.Address;
+            var address = orderToCreate.Customer!.Address!;
             var addressId = await _dbConnection.QuerySingleAsync<Guid>(insertAddressSql, new
             {
                 address.StreetName, 
@@ -72,26 +71,88 @@ public class OrderRepository
                 AddressId = addressId
             }, transaction);
         
-            foreach (var boxId in orderToCreate.Boxes)
+            foreach (var box in orderToCreate.Boxes!)
             {
-                var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id) 
-                                    VALUES (@BoxId, @OrderId)";
-                await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new {BoxId = boxId, OrderId = order.Id}, transaction);
+                var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id, quantity) 
+                                    VALUES (@BoxId, @OrderId, @Quantity)";
+                await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new
+                {
+                    BoxId = box.Key, OrderId = order.Id, box.Value
+                }, transaction);
             }
+            
             transaction.Commit();
             return order;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
             transaction.Rollback();
-            throw;
+            throw new Exception("Failed to complete transaction.");
         }
     }
     
     // Get all orders
-    // Get received orders
-    // Get preparing orders
+    public async Task<IEnumerable<Order>> Get()
+    {
+        var sql = $@"SELECT 
+    o.order_id AS {nameof(Order.Id)},
+    o.status AS {nameof(Order.ShippingStatus)},
+    o.created_at AS {nameof(Order.CreatedAt)},
+    o.updated_at AS {nameof(Order.UpdatedAt)},
+    
+    c.email AS {nameof(Order.Customer.Email)},
+    c.first_name AS {nameof(Order.Customer.FirstName)},
+    c.last_name AS {nameof(Order.Customer.LastName)},
+    c.phone_number AS {nameof(Order.Customer.PhoneNumber)},
+    
+    a.street_name AS {nameof(Order.Customer.Address.StreetName)},
+    a.house_number AS {nameof(Order.Customer.Address.HouseNumber)},
+    a.house_number_addition AS {nameof(Order.Customer.Address.HouseNumberAddition)},
+    a.city AS {nameof(Order.Customer.Address.City)},
+    a.postal_code AS {nameof(Order.Customer.Address.PostalCode)},
+    a.country AS {nameof(Order.Customer.Address.Country)},
+    
+    
+    FROM {_databaseSchema}.orders o 
+        INNER JOIN {_databaseSchema}.customer c 
+            ON o.customer_email = c.email 
+        INNER JOIN {_databaseSchema}.customer_address_link cal 
+            ON c.email = cal.customer_email  
+        INNER JOIN {_databaseSchema}.address a 
+            ON cal.address_id = a.address_id";
+        
+        var orders = await _dbConnection.QueryAsync<Order>(sql);
+        
+        foreach (var order in orders)
+        {
+            var boxSql = @$"SELECT 
+box_id AS {nameof(Order.Boxes.Keys)},
+quantity AS {nameof(Order.Boxes.Values)},
+ FROM {_databaseSchema}.box_order_link WHERE order_id = @Id";
+            
+            var boxes = (await _dbConnection.QueryAsync<(Guid,int)>(boxSql, new {Id = order.Id}))
+                .ToDictionary();
+            order.Boxes = boxes;
+        }
+        
+        return orders;
+    }
+    
+    // Get received preparing orders
+    public async Task<IEnumerable<Order>> GetByStatus(ShippingStatus status)//multiple statuses, how?
+    {
+        throw new NotImplementedException();
+    }
+    
     // Update shipping status
+    public async Task<Order> UpdateStatus(Order orderToUpdate)
+    {
+        throw new NotImplementedException();
+    }
+    
     // Delete order if received
+    public async Task Delete(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }
