@@ -7,6 +7,7 @@ import { NavMenuComponent } from "./nav-menu/nav-menu.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import {HomeComponent} from "./home/home.component";
 import {BoxListModule} from "./boxlist/boxlist.module";
+import {OrdersModule} from "./orders/orders.module";
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import {BoxListModule} from "./boxlist/boxlist.module";
     AppRoutingModule,
     NgApexchartsModule,
     BoxListModule,
+    OrdersModule,
     HttpClientModule
   ],
   providers: [],

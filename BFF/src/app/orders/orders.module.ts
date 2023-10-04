@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import {BoxListComponent} from "./boxlist.component";
+import {OrdersComponent} from "./orders.component";
 import {ListComponent} from "./list/list.component";
 import {CommonModule} from "@angular/common";
 import {CreateboxComponent} from "./(create)/createbox.component";
@@ -7,7 +7,7 @@ import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
-    BoxListComponent,
+    OrdersComponent,
     ListComponent,
     CreateboxComponent
   ],
@@ -16,6 +16,6 @@ import {FormsModule} from "@angular/forms";
     FormsModule
   ],
   providers: [],
-  bootstrap: [BoxListComponent]
+  bootstrap: [OrdersComponent]
 })
-export class BoxListModule { }
+export class OrdersModule { }

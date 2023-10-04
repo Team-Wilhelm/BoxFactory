@@ -1,88 +1,44 @@
-<dialog id="create_box" class="modal">
+<dialog id="create_order" class="modal">
   <div class="modal-box">
     <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-
       <div class="flex flex-col">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+
         <div class="prose">
           <h2>
             Create new Box:
           </h2>
         </div>
-
+        <!-- This input collects IDs of created boxes -->
         <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Weight:</span>
+            <span class="label-text">Boxes IDs:</span>
           </label>
-          <input type="number" placeholder="Enter weight" class="input input-bordered w-full"
-                 id="weight" name="weight" [(ngModel)]="box.weight" required/>
+          <input type="text" placeholder="Enter IDs separated by comma" class="input input-bordered w-full"
+                 id="boxes" name="boxes" required/>
         </div>
 
+        <!-- This input collects Customer data -->
         <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Colour:</span>
+            <span class="label-text">Customer:</span>
           </label>
-          <input type="text" placeholder="Enter colour" class="input input-bordered w-full"
-                 id="colour" name="colour" [(ngModel)]="box.colour"/>
+          <input type="text" placeholder="Enter customer" class="input input-bordered w-full"
+                 id="customer" name="customer" required/>
         </div>
 
-        <div class="form-control w-full">
+        <!-- This input collects Shipping Status data -->
+        <div class="form-control w-full mb-3">
           <label class="label">
-            <span class="label-text">Material:</span>
+            <span class="label-text">Shipping Status:</span>
           </label>
-          <input type="text" placeholder="Enter material" class="input input-bordered w-full"
-                 id="material" name="material" [(ngModel)]="box.material"/>
+          <input type="text" placeholder="Enter shipping status" class="input input-bordered w-full"
+                 id="shippingStatus" name="shippingStatus"  required/>
         </div>
 
-        <div class="divider">Dimensions</div>
-
-        <div class="flex gap-3">
-
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text">Length:</span>
-            </label>
-            <input type="number" placeholder="Enter length" class="input input-bordered w-full"
-                   id="length" name="length" [(ngModel)]="dimensions.length" required/>
-          </div>
-
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text">Width:</span>
-            </label>
-            <input type="number" placeholder="Enter width" class="input input-bordered w-full"
-                   id="width" name="width" [(ngModel)]="dimensions.width" required/>
-          </div>
-
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text">Height:</span>
-            </label>
-            <input type="number" placeholder="Enter height" class="input input-bordered w-full"
-                   id="height" name="height" [(ngModel)]="dimensions.height" required/>
-          </div>
-
-        </div>
-
-        <div class="divider">Price</div>
-        <div class="flex gap-3 mb-3">
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text">Price:</span>
-            </label>
-            <input type="number" placeholder="Enter price" class="input input-bordered w-full"
-                   id="price" name="price" [(ngModel)]="box.price" required/>
-          </div>
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text">Stock:</span>
-            </label>
-            <input type="number" placeholder="Enter stock" class="input input-bordered w-full"
-                   id="stock" name="stock" [(ngModel)]="box.stock" required/>
-          </div>
-        </div>
-
-        <button class="btn btn-primary" type="submit" (click)="onCreateBox()">Create New</button>
+        <button class="btn btn-primary" type="submit">
+          Create Order
+        </button>
       </div>
     </form>
   </div>
