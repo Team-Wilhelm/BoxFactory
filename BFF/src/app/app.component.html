@@ -1,7 +1,9 @@
-<body class="flex justify-center">
-  <main class="container py-3">
-    <router-outlet></router-outlet>
-  </main>
+<body class="h-full relative">
+  <div class="flex justify-center">
+    <main class="container py-3 overflow-auto" style="max-height: 100%">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 
   <app-nav-menu></app-nav-menu>
 </body>
