@@ -22,17 +22,16 @@ public class GetTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var expectedBoxes = new List<BoxCreateDto>();
+        var expectedBoxes = new List<Box>();
         for (int i = 0; i < 10; i++)
         {
-            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
+            var boxDto = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
+            var box = await Helper.InsertBoxIntoDatabase(boxDto);
             expectedBoxes.Add(box);
-            var sql = $@""; //TODO add sql
-            await Helper.DbConnection.ExecuteAsync(sql, box);
         }
         
         // Act
-        var url = "http://localhost:ADD_ME"; //TODO add url
+        var url = Helper.UrlBase + "/box";
         HttpResponseMessage response;
         try
         {
@@ -59,12 +58,8 @@ public class GetTests
         // Assert
         using (new AssertionScope())
         {
-            var dbBoxList = dbBoxes.ToList();
-            foreach (var box in dbBoxList.ToList())
-            {
-                response.IsSuccessStatusCode.Should().BeTrue();
-            }
-            expectedBoxes.Should().BeEquivalentTo(dbBoxList, options => options.Excluding(b => b.Id));
+            response.IsSuccessStatusCode.Should().BeTrue();
+            expectedBoxes.Should().BeEquivalentTo(dbBoxes.ToList());
         }
     }
     
@@ -75,35 +70,13 @@ public class GetTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = Helper.CreateBoxCreateDto(weight, colour, material, price, 1, height, length, width);
+        var boxDto = Helper.CreateBoxCreateDto(weight, colour, material, price, 1, height, length, width);
+        var box = await Helper.InsertBoxIntoDatabase(boxDto);
+
+        var url = Helper.UrlBase + $"/box/{box.Id}"; //TODO add url
         
-        var url = "http://localhost:ADD_ME"; //TODO add url
         // Act
         HttpResponseMessage response;
-        try
-        {
-            response = await _httpClient.PostAsJsonAsync(url, box);
-            TestContext.WriteLine("THE FULL BODY RESPONSE: " + await response.Content.ReadAsStringAsync());
-        }
-        catch (Exception e)
-        {
-            throw new Exception(e.Message, e.InnerException);
-        }
-        
-        Box responseBox;
-        try
-        {
-            responseBox = JsonConvert.DeserializeObject<Box>(
-                await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
-        }
-        catch (Exception e)
-        {
-            throw new Exception(e.Message, e.InnerException);
-        }
-        // Act
-
-        var boxId = responseBox.Id;
-        url = "http://localhost:ADD_ME"; //TODO add url with boxId
         try
         {
             response = await _httpClient.GetAsync(url);

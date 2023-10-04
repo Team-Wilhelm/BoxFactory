@@ -45,7 +45,42 @@ public static class Helper
         }
     }
 
-    //TODO add script
+    public static async Task<Box> InsertBoxIntoDatabase(BoxCreateDto boxDto)
+    {
+        // Insert dimensions
+        var sql = $@"INSERT INTO testing.dimensions (length, width, height) 
+                        VALUES (@Length, @Width, @Height) 
+                        RETURNING 
+                            dimensions_id AS {nameof(Dimensions.Id)},
+                            length AS {nameof(Dimensions.Length)},
+                            height AS {nameof(Dimensions.Height)},
+                            width AS {nameof(Dimensions.Width)}";
+        var dimensions = await DbConnection.QuerySingleAsync<Dimensions>(sql, boxDto.DimensionsDto);
+
+        // Insert the box and link it to the dimensions, set the box's dimensions to the dimensions object
+        sql = @$"INSERT INTO testing.boxes (weight, colour, material, price, created_at, stock, dimensions_id) 
+                    VALUES (@Weight, @Colour, @Material, @Price, NOW(), @Stock, @DimensionsId)
+                    RETURNING
+                        weight AS {nameof(Box.Weight)},
+                        colour AS {nameof(Box.Colour)},
+                        material AS {nameof(Box.Material)},
+                        price AS {nameof(Box.Price)},
+                        created_at AS {nameof(Box.CreatedAt)},
+                        stock AS {nameof(Box.Stock)},
+                        box_id AS {nameof(Box.Id)};";
+        var box = await DbConnection.QuerySingleAsync<Box>(sql, new
+        {
+            boxDto.Weight,
+            boxDto.Colour,
+            boxDto.Material,
+            boxDto.Price,
+            boxDto.Stock,
+            DimensionsId = dimensions.Id
+        });
+        box.Dimensions = dimensions;
+        return box;
+    }
+    
      private static string RebuildScript = @"
 DROP SCHEMA IF EXISTS testing CASCADE;
 CREATE SCHEMA testing;
