@@ -1,5 +1,6 @@
 using System.Data;
-using Core;
+using System.Diagnostics;
+using BoxFactoryAPI.Exceptions;
 using Core.Mapping;
 using Core.Services;
 using Infrastructure;
@@ -17,7 +18,7 @@ builder.Services.AddSingleton<IDbConnection>(container =>
 
 builder.Services.AddScoped<BoxRepository>();
 builder.Services.AddScoped<BoxService>();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.Add<ExceptionFilter>());
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();
@@ -32,6 +33,15 @@ app.UseCors(options =>
         .AllowAnyHeader()
         .AllowCredentials();
 });
+
+app.UseExceptionHandler(a => a.Run(async context => {
+    var trace = Activity.Current?.Id ?? context.TraceIdentifier;
+    const int statusCode = StatusCodes.Status500InternalServerError;
+
+    context.Response.StatusCode = statusCode;
+    await context.Response.WriteAsJsonAsync(
+        new ErrorResponse("", statusCode, trace, "Something went wrong"));
+}));
 
 if (app.Environment.IsDevelopment())
 {
