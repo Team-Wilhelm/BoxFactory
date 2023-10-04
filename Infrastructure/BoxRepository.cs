@@ -8,16 +8,16 @@ public class BoxRepository
 {
     private readonly IDbConnection _dbConnection;
     private readonly string _databaseSchema;
-    
+
     public BoxRepository(IDbConnection dbConnection)
     {
         _dbConnection = dbConnection;
-        _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" 
-            ?  "testing"
-            :  "production";
-        RebuildDatabase("testing");
+        _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+            ? "testing"
+            : "production";
+        //RebuildDatabase("testing");
     }
-    
+
     public async Task<IEnumerable<Box>> Get()
     {
         //TODO: Please refactor this method to use Dapper's multi-mapping feature instead of the foreach loop to avoid certain doom.
@@ -35,7 +35,8 @@ public class BoxRepository
         var enumerable = boxes.ToList();
         foreach (var box in enumerable)
         {
-            var dimensionsId = await _dbConnection.QuerySingleAsync<Guid>($"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = box.Id });
+            var dimensionsId = await _dbConnection.QuerySingleAsync<Guid>(
+                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = box.Id });
             var dimensionsSql = @$"SELECT
                          dimensions_id AS {nameof(Dimensions.Id)},
                          length AS {nameof(Dimensions.Length)},
@@ -45,9 +46,10 @@ public class BoxRepository
                     WHERE dimensions_id = @Id";
             box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
         }
+
         return enumerable;
     }
-    
+
     public async Task<Box> Get(Guid id)
     {
         var boxSql = @$"SELECT
@@ -61,8 +63,10 @@ public class BoxRepository
                     FROM {_databaseSchema}.boxes
                     WHERE box_id = @Id";
         var box = await _dbConnection.QuerySingleAsync<Box>(boxSql, new { Id = id });
-        
-        var dimensionsId = await _dbConnection.QuerySingleAsync<Guid>($"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = id });
+
+        var dimensionsId =
+            await _dbConnection.QuerySingleAsync<Guid>(
+                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = id });
         var dimensionsSql = @$"SELECT
                          dimensions_id AS {nameof(Dimensions.Id)},
                          length AS {nameof(Dimensions.Length)},
@@ -73,46 +77,100 @@ public class BoxRepository
         box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
         return box;
     }
-    
+
     public async Task<Box> Create(Box box)
     {
         var insertDimensionsSql = @$"INSERT INTO {_databaseSchema}.dimensions (length, width, height) 
-                                    VALUES (@Length, @Width, @Height) RETURNING dimensions_id";
-        var dimensionsId = await _dbConnection.QuerySingleAsync<Guid>(insertDimensionsSql, box.Dimensions);
-        
-        var sql = @$"INSERT INTO {_databaseSchema}.boxes (weight, colour, material, price, stock, dimensions_id, created_at)
+                                        VALUES (@Length, @Width, @Height) 
+                                        RETURNING
+                                            dimensions_id AS {nameof(Box.Dimensions.Id)},
+                                            length AS {nameof(Box.Dimensions.Length)},
+                                            width AS {nameof(Box.Dimensions.Width)},
+                                            height AS {nameof(Box.Dimensions.Height)}
+                                        ";
+        var dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(insertDimensionsSql, box.Dimensions);
+
+        var sql =
+            @$"INSERT INTO {_databaseSchema}.boxes (weight, colour, material, price, stock, dimensions_id, created_at)
                      VALUES (@Weight, @Colour, @Material, @Price, @Stock, @DimensionsID, @CreatedAt)
                      RETURNING 
                          box_id AS {nameof(Box.Id)},
                          weight AS {nameof(Box.Weight)},
                          colour AS {nameof(Box.Colour)}, 
                          material AS {nameof(Box.Material)}, 
-                         dimensions_id AS {nameof(Box.Dimensions.Id)}, 
                          created_at AS {nameof(Box.CreatedAt)},
                          stock AS {nameof(Box.Stock)},
                          price AS {nameof(Box.Price)}";
-      
+
         var createdBox = await _dbConnection.QuerySingleAsync<Box>(sql, new
         {
             box.Weight,
             box.Colour,
             box.Material,
-            DimensionsID = dimensionsId,
+            DimensionsID = dimensions.Id,
             box.CreatedAt,
             box.Stock,
             box.Price
         });
+
+        createdBox.Dimensions = dimensions;
         return createdBox;
     }
-    
-    public async Task<Box> Update(Guid id, BoxUpdateDto boxUpdateDto)
+
+    public async Task<Box> Update(Box box)
     {
-        throw new NotImplementedException();
+        //TODO: Resolve updating dimensions better
+        var sql = @$"UPDATE {_databaseSchema}.boxes 
+                     SET weight = @Weight, colour = @Colour, material = @Material, price = @Price, stock = @Stock
+                     WHERE box_id = @Id
+                     RETURNING 
+                         box_id AS {nameof(Box.Id)},
+                         weight AS {nameof(Box.Weight)},
+                         colour AS {nameof(Box.Colour)}, 
+                         material AS {nameof(Box.Material)},  
+                         created_at AS {nameof(Box.CreatedAt)},
+                         stock AS {nameof(Box.Stock)},
+                         price AS {nameof(Box.Price)}";
+
+        var updatedBox = await _dbConnection.QuerySingleAsync<Box>(sql, new
+        {
+            box.Id,
+            box.Weight,
+            box.Colour,
+            box.Material,
+            box.CreatedAt,
+            box.Stock,
+            box.Price
+        });
+
+        var dimensionsId =
+            await _dbConnection.QuerySingleAsync<Guid>(
+                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { box.Id });
+
+        var dimensionsSql = @$"UPDATE {_databaseSchema}.dimensions
+                              SET length = @Length, width = @Width, height = @Height
+                              WHERE dimensions_id = @Id
+                              RETURNING 
+                                    dimensions_id AS {nameof(Box.Dimensions.Id)},
+                                    length AS {nameof(Box.Dimensions.Length)},
+                                    width AS {nameof(Box.Dimensions.Width)},
+                                    height AS {nameof(Box.Dimensions.Height)}
+                              ";
+
+        updatedBox.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new
+        {
+            Id = dimensionsId,
+            box.Dimensions.Length,
+            box.Dimensions.Width,
+            box.Dimensions.Height
+        });
+        return updatedBox;
     }
-    
+
     public async Task Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var sql = @$"DELETE FROM {_databaseSchema}.boxes WHERE box_id = @Id";
+        await _dbConnection.ExecuteAsync(sql, new { Id = id });
     }
 
     private void RebuildDatabase(string schemaName)
@@ -190,5 +248,6 @@ CREATE TABLE IF NOT EXISTS {schemaName}.Customer_Address_Link
     customer_id uuid REFERENCES {schemaName}.Customers (customer_id),
     address_id  uuid REFERENCES {schemaName}.Addresses (address_id)
 );";
+        _dbConnection.Execute(sql);
     }
 }
