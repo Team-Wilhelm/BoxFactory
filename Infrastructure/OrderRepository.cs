@@ -20,22 +20,24 @@ public class OrderRepository
     public async Task<Order> Create(Order orderToCreate)
     {
         // TODO transactions
-        
-        var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street, house_number, house_number_addition, city, postal_code, country)) 
+        using var transaction = _dbConnection.BeginTransaction();
+        try
+        {
+            var insertAddressSql = @$"INSERT INTO {_databaseSchema}.address (street, house_number, house_number_addition, city, postal_code, country)) 
                                     VALUES (@Street, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
                                     RETURNING address_id";
-        var addressId = await _dbConnection.QuerySingleAsync<Guid>(insertAddressSql, orderToCreate.Customer.Address);
+            var addressId = await _dbConnection.QuerySingleAsync<Guid>(insertAddressSql, orderToCreate.Customer.Address, transaction);
         
-        var insertCustomerSql = @$"INSERT INTO {_databaseSchema}.customer (first_name, last_name, email, phone_number)) 
+            var insertCustomerSql = @$"INSERT INTO {_databaseSchema}.customer (first_name, last_name, email, phone_number)) 
                                     VALUES (@FirstName, @LastName, @Email, @PhoneNumber) 
                                     RETURNING customer_id";
-        var customerId = await _dbConnection.QuerySingleAsync<Guid>(insertCustomerSql, orderToCreate.Customer);
+            var customerId = await _dbConnection.QuerySingleAsync<Guid>(insertCustomerSql, orderToCreate.Customer, transaction);
         
-        var insertCustomerAddressLinkSql = @$"INSERT INTO {_databaseSchema}.customer_address_link (customer_id, address_id) 
+            var insertCustomerAddressLinkSql = @$"INSERT INTO {_databaseSchema}.customer_address_link (customer_id, address_id) 
                                     VALUES (@CustomerId, @AddressId)";
-        await _dbConnection.QuerySingleAsync<Guid>(insertCustomerAddressLinkSql, new {CustomerId = customerId, AddressId = addressId});
+            await _dbConnection.QuerySingleAsync<Guid>(insertCustomerAddressLinkSql, new {CustomerId = customerId, AddressId = addressId}, transaction);
 
-        var insertOrderSql = @$"INSERT INTO {_databaseSchema}.order (status, created_at, updated_at, customer_id, address_id)) 
+            var insertOrderSql = @$"INSERT INTO {_databaseSchema}.order (status, created_at, updated_at, customer_id, address_id)) 
                                     VALUES (@Status, @CreatedAt, @UpdatedAt, @CustomerId, @AddressId) 
                                     RETURNING 
                                     order_id AS {nameof(Order.Id)},
@@ -45,22 +47,30 @@ public class OrderRepository
                                     customer_id AS {nameof(Order.Customer)},
                                     address_id AS {nameof(Order.Customer.Address)}";
 
-        var order = await _dbConnection.QuerySingleAsync<Order>(insertOrderSql, new
-        {
-            orderToCreate.ShippingStatus,
-            orderToCreate.CreatedAt,
-            orderToCreate.UpdatedAt,
-            CustomerId = customerId,
-            AddressId = addressId
-        });
+            var order = await _dbConnection.QuerySingleAsync<Order>(insertOrderSql, new
+            {
+                orderToCreate.ShippingStatus,
+                orderToCreate.CreatedAt,
+                orderToCreate.UpdatedAt,
+                CustomerId = customerId,
+                AddressId = addressId
+            }, transaction);
         
-        foreach (var box in orderToCreate.Boxes)
-        {
-            var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id) 
+            foreach (var box in orderToCreate.Boxes)
+            {
+                var insertBoxOrderSql = @$"INSERT INTO {_databaseSchema}.box_order_link (box_id, order_id) 
                                     VALUES (@BoxId, @OrderId)";
-            await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new {BoxId = box.Id, order.Id});
+                await _dbConnection.QuerySingleAsync<Box>(insertBoxOrderSql, new {BoxId = box.Id, order.Id}, transaction);
+            }
+            transaction.Commit();
+            return order;
         }
-        return order;
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            transaction.Rollback();
+            throw;
+        }
     }
     
     // Get all orders
