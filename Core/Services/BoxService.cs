@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure;
 using Models;
+using Models.Exceptions;
 
 namespace Core.Services;
 
@@ -22,7 +23,14 @@ public class BoxService
 
     public async Task<Box> Get(Guid id)
     {
-        return await _boxRepository.Get(id);
+        try
+        {
+            return await _boxRepository.Get(id);
+        }
+        catch (InvalidOperationException)
+        {
+            throw new NotFoundException("Box not found");
+        }
     }
 
     public async Task<Box> Create(BoxCreateDto boxCreateDto)
@@ -34,18 +42,14 @@ public class BoxService
 
     public async Task<Box> Update(Guid id, BoxUpdateDto boxUpdateDto)
     {
-        var box = await _boxRepository.Get(id);
-        if (box == null)
-        {
-            throw new Exception("Box not found");
-        }
-
+        var box = await Get(id);
         box = _mapper.Map(boxUpdateDto, box);
         return await _boxRepository.Update(box);
     }
 
     public async Task Delete(Guid id)
     {
+        await Get(id);
         await _boxRepository.Delete(id);
     }
 }

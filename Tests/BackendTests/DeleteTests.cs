@@ -1,7 +1,7 @@
-﻿using Dapper;
+﻿using System.Net;
+using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 
 namespace Tests.BackendTests;
 
@@ -16,33 +16,14 @@ public class DeleteTests
     }
     
     [Test]
-    [TestCase(20, "red", "cardboard", 9, 20, 20, 10)]
-    public async Task DeleteBox(float weight, string colour, string material, float price, float height, float length, float width)
+    public async Task DeleteBoxSuccess()
     {
         // Arrange
         Helper.TriggerRebuild();
-        var box = new BoxCreateDto()
-        {
-            Weight = weight,
-            Colour = colour,
-            Material = material,
-            Price = price,
-            Dimensions = new Dimensions()
-            {
-                Height = height,
-                Length = length,
-                Width = width
-            }
-        };
-        
-        var sql = $@""; //TODO add sql
-        await using (var conn = await Helper.DataSource.OpenConnectionAsync())
-        {
-            await conn.ExecuteAsync(sql, box);
-        }
+        var box = await Helper.GetValidBoxFromDatabase();
         
         // Act
-        var url = "http://localhost:ADD_ME"; //TODO add url
+        var url = Helper.UrlBase + $"/box/{box.Id}";
         HttpResponseMessage response; 
         try
         {
@@ -57,13 +38,37 @@ public class DeleteTests
         // Assert
         using (new AssertionScope())
         {
-            await using (var conn = await Helper.DataSource.OpenConnectionAsync())
-            {
-                (conn.ExecuteScalar<int>($"") == 0) //TODO add correct sql
-                    .Should()
-                    .BeTrue();
-            }
             response.IsSuccessStatusCode.Should().BeTrue();
+            var boxAmount = await Helper.DbConnection.ExecuteScalarAsync<int>("SELECT * FROM testing.boxes WHERE box_id = @Id", new { box.Id });
+            boxAmount.Should().Be(0);
+        }
+    }
+
+    [Test]
+    public async Task DeleteBoxFail()
+    {
+        // Arrange
+        Helper.TriggerRebuild();
+        
+        // Act
+        var url = Helper.UrlBase + $"/box/{Guid.NewGuid()}";
+        
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.DeleteAsync(url);
+            TestContext.WriteLine("THE FULL BODY RESPONSE: " + await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message, e.InnerException);
+        }
+        
+        // Assert
+        using (new AssertionScope())
+        {
+            response.IsSuccessStatusCode.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
