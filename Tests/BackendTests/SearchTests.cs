@@ -25,10 +25,9 @@ public class SearchTests
         Helper.TriggerRebuild();
         for (int i = 0; i < 20; i++)
         {
-            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i);
+            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             var sql = $@""; //TODO add sql
-            await using var conn = await Helper.DataSource.OpenConnectionAsync();
-            await conn.ExecuteAsync(sql, box);
+            await Helper.DbConnection.ExecuteAsync(sql, box);
         }
         
         // Act
@@ -74,10 +73,9 @@ public class SearchTests
         Helper.TriggerRebuild();
         for (int i = 0; i < 20; i++)
         {
-            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i);
+            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             var sql = $@""; //TODO add sql
-            await using var conn = await Helper.DataSource.OpenConnectionAsync();
-            await conn.ExecuteAsync(sql, box);
+            await Helper.DbConnection.ExecuteAsync(sql, box);
         }
         
         // Act
