@@ -16,6 +16,8 @@ export interface BoxCreateDto {
   colour?: string;
   material?: string;
   dimensions?: Dimensions; // Assuming Dimensions is another interface we defined in TypeScript
+  stock: number; // int in C# = number in TypeScript
+  price: number; // float in C# = number in TypeScript
 }
 
 export interface BoxUpdateDto {

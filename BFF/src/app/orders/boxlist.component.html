@@ -1,0 +1,25 @@
+<div class="prose">
+  <h1 class="p-3">List of all boxes </h1>
+</div>
+
+<div class="flex justify-between">
+  <div class="join rounded-md">
+    <div>
+      <div>
+        <input class="input input-bordered join-item" placeholder="Search"/>
+      </div>
+    </div>
+    <div class="indicator">
+      <button class="btn join-item">Search</button>
+    </div>
+  </div>
+
+  <div>
+    <button class="btn btn-secondary rounded-md" onclick="create_box.showModal()">Add new box</button>
+    <create-box></create-box>
+  </div>
+</div>
+
+<div class="overflow-x-auto">
+  <app-box-list></app-box-list>
+</div>
