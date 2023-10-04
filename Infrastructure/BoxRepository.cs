@@ -18,19 +18,50 @@ public class BoxRepository
         //RebuildDatabase("testing");
     }
 
-    public async Task<IEnumerable<Box>> Get()
+    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage)
     {
+        //TODO: Resolve searching by multiple words to only include boxes that match all words
         //TODO: Please refactor this method to use Dapper's multi-mapping feature instead of the foreach loop to avoid certain doom.
-        var boxSql = @$"SELECT
-                         box_id AS {nameof(Box.Id)},
-                         weight AS {nameof(Box.Weight)},
-                         colour AS {nameof(Box.Colour)}, 
-                         material AS {nameof(Box.Material)}, 
-                         created_at AS {nameof(Box.CreatedAt)},
-                         stock AS {nameof(Box.Stock)},
-                         price AS {nameof(Box.Price)}
-                    FROM {_databaseSchema}.boxes";
-        var boxes = await _dbConnection.QueryAsync<Box>(boxSql);
+        string boxSql;
+        object queryParams;
+        
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            boxSql = @$"SELECT
+                 box_id AS {nameof(Box.Id)},
+                 weight AS {nameof(Box.Weight)},
+                 colour AS {nameof(Box.Colour)}, 
+                 material AS {nameof(Box.Material)}, 
+                 created_at AS {nameof(Box.CreatedAt)},
+                 stock AS {nameof(Box.Stock)},
+                 price AS {nameof(Box.Price)}
+              FROM {_databaseSchema}.boxes
+              LIMIT @BoxesPerPage 
+              OFFSET @Offset";
+    
+            queryParams = new { BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
+        }
+        else
+        {
+            boxSql = @$"SELECT
+                 box_id AS {nameof(Box.Id)},
+                 weight AS {nameof(Box.Weight)},
+                 colour AS {nameof(Box.Colour)}, 
+                 material AS {nameof(Box.Material)}, 
+                 created_at AS {nameof(Box.CreatedAt)},
+                 stock AS {nameof(Box.Stock)},
+                 price AS {nameof(Box.Price)}
+              FROM {_databaseSchema}.boxes
+              WHERE colour ILIKE @SearchTerm
+              OR material ILIKE @SearchTerm
+              OR weight::text ILIKE @SearchTerm
+              OR price::text ILIKE @SearchTerm
+              LIMIT @BoxesPerPage 
+              OFFSET @Offset";
+    
+            queryParams = new { SearchTerm = searchTerm, BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
+        }
+        var boxes = await _dbConnection.QueryAsync<Box>(boxSql, queryParams);
 
         var enumerable = boxes.ToList();
         foreach (var box in enumerable)

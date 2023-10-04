@@ -16,9 +16,9 @@ public class BoxService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Box>> Get()
+    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage)
     {
-        return await _boxRepository.Get();
+        return await _boxRepository.Get(searchTerm, currentPage, boxesPerPage);
     }
 
     public async Task<Box> Get(Guid id)

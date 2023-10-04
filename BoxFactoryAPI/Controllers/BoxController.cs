@@ -1,4 +1,3 @@
-using System.Collections;
 using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -17,27 +16,27 @@ public class BoxController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Box>>> Get()
+    public async Task<ActionResult<IEnumerable<Box>>> Get([FromQuery] string? searchTerm, [FromQuery] int currentPage, [FromQuery] int boxesPerPage)
     {
-        return Ok(await _boxService.Get());
+        return Ok(await _boxService.Get(searchTerm, currentPage, boxesPerPage));
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Box>> Get([FromRoute] Guid id)
     {
-        return await _boxService.Get(id);
+        return Ok(await _boxService.Get(id));
     }
 
     [HttpPost]
     public async Task<ActionResult<Box>> Create([FromBody] BoxCreateDto boxCreateDto)
     {
-        return await _boxService.Create(boxCreateDto);
+        return Ok(await _boxService.Create(boxCreateDto));
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<Box>> Update([FromRoute] Guid id, [FromBody] BoxUpdateDto boxUpdateDto)
     {
-        return await _boxService.Update(id, boxUpdateDto);
+        return Ok(await _boxService.Update(id, boxUpdateDto));
     }
 
     [HttpDelete("{id:guid}")]
