@@ -18,29 +18,28 @@ public class UpdateTests
     }
 
     [Test]
-    [TestCase(20, "red", "cardboard", 100, 10, 20, 20, 10)]
+    [TestCase(30, "blue", "plastic", 100, 200, 200, 200, 200)]
     public async Task UpdateBoxSuccessfully(float weight, string colour, string material, float price, int stock,
         float height, float length, float width)
     {
         // Arrange
         Helper.TriggerRebuild();
-        var boxDto = Helper.CreateBoxCreateDto(weight, colour, material, price, stock, height, length, width);
-        var box = await Helper.InsertBoxIntoDatabase(boxDto);
+        var box = await Helper.GetValidBoxFromDatabase();
         var url = Helper.UrlBase + "/box/" + box.Id;
 
         var updateBoxDto = new BoxUpdateDto()
         {
-            Weight = 30,
-            Colour = "blue",
-            Material = "plastic",
-            Price = 200,
-            Stock = 20,
+            Weight = weight,
+            Colour = colour,
+            Material = material,
+            Price = price,
+            Stock = stock,
             DimensionsDto = new DimensionsDto()
             {
-                Height = 30,
-                Length = 30,
-                Width = 30
-            }
+                Height = height,
+                Length = length,
+                Width = width
+            },
         };
 
         // Act
@@ -86,31 +85,30 @@ public class UpdateTests
     }
 
     [Test]
-    [TestCase(20, "red", "cardboard", 100, 10, 20, 20, 10)]
+    [TestCase(-30, "blue", "plastic", -200, -10, -20, -20, -10)]
     public async Task UpdateBoxFailed(float weight, string colour, string material, float price, int stock,
         float height, float length, float width)
     {
         // Arrange
         Helper.TriggerRebuild();
-        var boxDto = Helper.CreateBoxCreateDto(weight, colour, material, price, stock, height, length, width);
-        var box = await Helper.InsertBoxIntoDatabase(boxDto);
+        var box = await Helper.GetValidBoxFromDatabase();
         var url = Helper.UrlBase + "/box/" + box.Id;
 
         var updateBoxDto = new BoxUpdateDto()
         {
-            Weight = -30,
-            Colour = "blue",
-            Material = "plastic",
-            Price = -200,
-            Stock = -20,
+            Weight = weight,
+            Colour = colour,
+            Material = material,
+            Price = price,
+            Stock = stock,
             DimensionsDto = new DimensionsDto()
             {
-                Height = -30,
-                Length = -30,
-                Width = -30
-            }
+                Height = height,
+                Length = length,
+                Width = width
+            },
         };
-
+        
         // Act
         HttpResponseMessage response;
         try

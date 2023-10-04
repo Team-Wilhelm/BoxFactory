@@ -22,7 +22,14 @@ public class BoxService
 
     public async Task<Box> Get(Guid id)
     {
-        return await _boxRepository.Get(id);
+        try
+        {
+            return await _boxRepository.Get(id);
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new Exception("Box not found", e.InnerException);
+        }
     }
 
     public async Task<Box> Create(BoxCreateDto boxCreateDto)
@@ -46,6 +53,14 @@ public class BoxService
 
     public async Task Delete(Guid id)
     {
+        try
+        {
+            await _boxRepository.Get(id);
+        } catch (InvalidOperationException e)
+        {
+            throw new Exception("Box not found", e.InnerException);
+        }
+        
         await _boxRepository.Delete(id);
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Json;
-using Dapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
 using Newtonsoft.Json;

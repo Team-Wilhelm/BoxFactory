@@ -80,6 +80,16 @@ public static class Helper
         box.Dimensions = dimensions;
         return box;
     }
+
+    /// <summary>
+    /// Inserts a valid box into the database and returns the box with the id. 
+    /// </summary>
+    /// <returns>A box with weight 20, colour red, material cardboard, price 9, stock 20, height 20, length 20, width 10.</returns>
+    public static async Task<Box> GetValidBoxFromDatabase()
+    {
+        var boxDto = CreateBoxCreateDto(20, "red", "cardboard", 9, 20, 20, 20, 10);
+        return await InsertBoxIntoDatabase(boxDto);
+    }
     
      private static string RebuildScript = @"
 DROP SCHEMA IF EXISTS testing CASCADE;
@@ -156,7 +166,4 @@ CREATE TABLE IF NOT EXISTS testing.Customer_Address_Link
     address_id  uuid REFERENCES testing.Addresses (address_id)
 );
  ";
-     
-    
-     
 }

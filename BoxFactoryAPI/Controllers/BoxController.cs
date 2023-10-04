@@ -40,8 +40,21 @@ public class BoxController : ControllerBase
     }
     
     [HttpDelete("{id:guid}")]
-    public async Task Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        await _boxService.Delete(id);
+        // TODO: Exception handling middleware
+        try
+        {
+            await _boxService.Delete(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            if (e.Message == "Box not found")
+            {
+                return NotFound();
+            }
+            return BadRequest();
+        }
     }
 }
