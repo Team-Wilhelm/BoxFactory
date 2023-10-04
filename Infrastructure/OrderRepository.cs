@@ -115,9 +115,9 @@ public class OrderRepository
     
     FROM {_databaseSchema}.orders o 
         INNER JOIN {_databaseSchema}.customer c 
-            ON o.email = c.email 
+            ON o.customer_email = c.email 
         INNER JOIN {_databaseSchema}.customer_address_link cal 
-            ON c.email = cal.email  
+            ON c.email = cal.customer_email  
         INNER JOIN {_databaseSchema}.address a 
             ON cal.address_id = a.address_id";
         

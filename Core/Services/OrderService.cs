@@ -26,4 +26,17 @@ public class OrderService
         }
         throw new Exception("Missing data to create order.");
     }
+    
+    public async Task<IEnumerable<Order>> Get()
+    {
+        try
+        {
+            return await _orderRepository.Get();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Something went wrong while fetching orders.");
+        }
+    }
 }
