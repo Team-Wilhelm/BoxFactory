@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Models;
+namespace Models.DTOs;
 
-public class BoxCreateDto
+public class BoxUpdateDto
 {
     [Required]
     [Range(0, int.MaxValue)]
     public float Weight { get; set; }
+    
     public string? Colour { get; set; }
     public string? Material { get; set; }
     

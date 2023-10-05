@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Models;
+namespace Models.DTOs;
 
 public class DimensionsDto
 {

@@ -3,6 +3,7 @@ using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
+using Models.DTOs;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;

@@ -8,6 +8,8 @@ public class BoxRepository
 {
     private readonly IDbConnection _dbConnection;
     private readonly string _databaseSchema;
+    private readonly List<string> _colours;
+    private readonly List<string> _materials;
 
     public BoxRepository(IDbConnection dbConnection)
     {
@@ -15,40 +17,25 @@ public class BoxRepository
         _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ? "testing"
             : "production";
+        _colours = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.colours").ToList();
+        _materials = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.materials").ToList();
     }
 
-    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage)
+    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage, Sorting? sorting)
     {
         //TODO: Resolve searching by multiple words to only include boxes that match all words
         //TODO: Please refactor this method to use Dapper's multi-mapping feature instead of the foreach loop to avoid certain doom.
-        string boxSql;
-        object queryParams;
-        
-        if (string.IsNullOrWhiteSpace(searchTerm))
+
+        var searchQuery = "";
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            boxSql = @$"SELECT
-                 box_id AS {nameof(Box.Id)},
-                 weight AS {nameof(Box.Weight)},
-                 colour AS {nameof(Box.Colour)}, 
-                 material AS {nameof(Box.Material)}, 
-                 created_at AS {nameof(Box.CreatedAt)},
-                 stock AS {nameof(Box.Stock)},
-                 price AS {nameof(Box.Price)}
-              FROM {_databaseSchema}.boxes
-              LIMIT @BoxesPerPage 
-              OFFSET @Offset";
-    
-            queryParams = new { BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
-        }
-        else
-        {
-            // Split the search term into individual words.
             var searchTerms = searchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            
-            // Create a search condition, that will search for all search terms in the colour and material columns.
-            var searchCondition = string.Join(" AND ", searchTerms.Select(term => $"(colour ILIKE '%{term}%' OR material ILIKE '%{term}%')"));
-            
-            boxSql = @$"SELECT
+            var searchCondition = string.Join(" AND ", searchTerms.Select(term => $"(colour ILIKE '%{term}%' " +
+                $"OR material ILIKE '%{term}%')"));
+            searchQuery = $"WHERE {searchCondition}";
+        }
+
+        var boxSql = @$"SELECT
                  box_id AS {nameof(Box.Id)},
                  weight AS {nameof(Box.Weight)},
                  colour AS {nameof(Box.Colour)}, 
@@ -57,12 +44,11 @@ public class BoxRepository
                  stock AS {nameof(Box.Stock)},
                  price AS {nameof(Box.Price)}
               FROM {_databaseSchema}.boxes
-              WHERE {searchCondition}
+              {searchQuery}
+              {sorting?.Query}
               LIMIT @BoxesPerPage 
               OFFSET @Offset";
-    
-            queryParams = new { SearchTerm = searchTerm, BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
-        }
+        object queryParams = new { BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
         var boxes = await _dbConnection.QueryAsync<Box>(boxSql, queryParams);
 
         var enumerable = boxes.ToList();
@@ -79,7 +65,6 @@ public class BoxRepository
                     WHERE dimensions_id = @Id";
             box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
         }
-
         return enumerable;
     }
 
