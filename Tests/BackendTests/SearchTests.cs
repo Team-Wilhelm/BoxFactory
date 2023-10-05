@@ -66,16 +66,12 @@ public class SearchTests
             throw new Exception(e.Message, e.InnerException);
         }
 
-        // Count the amount of boxes with the search term
+        // Count the amount of boxes with the search term, which can be either in the colour or material column,
+        // with multiple words, both words must be present in either the colour or material column.
         var enumerable = boxes.ToList();
         var searchWords = searchTerm.Split(' ');
-        var count = enumerable.Sum(box => 
-            searchWords.Count(
-                word => box.Colour
-                    .ToLower()
-                    .Contains(word.ToLower()) 
-                        || box.Material.ToLower().Contains(word.ToLower())));
-
+        var count = enumerable.Count(box => searchWords.Any(word => box.Colour.Contains(word) || box.Material.Contains(word)));
+                    
         // Assert
         using (new AssertionScope())
         {

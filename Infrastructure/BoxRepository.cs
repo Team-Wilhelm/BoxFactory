@@ -15,7 +15,6 @@ public class BoxRepository
         _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ? "testing"
             : "production";
-        //RebuildDatabase("testing");
     }
 
     public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage)
@@ -43,6 +42,12 @@ public class BoxRepository
         }
         else
         {
+            // Split the search term into individual words.
+            var searchTerms = searchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
+            // Create a search condition, that will search for all search terms in the colour and material columns.
+            var searchCondition = string.Join(" AND ", searchTerms.Select(term => $"(colour ILIKE '%{term}%' OR material ILIKE '%{term}%')"));
+            
             boxSql = @$"SELECT
                  box_id AS {nameof(Box.Id)},
                  weight AS {nameof(Box.Weight)},
@@ -52,10 +57,7 @@ public class BoxRepository
                  stock AS {nameof(Box.Stock)},
                  price AS {nameof(Box.Price)}
               FROM {_databaseSchema}.boxes
-              WHERE colour ILIKE @SearchTerm
-              OR material ILIKE @SearchTerm
-              OR weight::text ILIKE @SearchTerm
-              OR price::text ILIKE @SearchTerm
+              WHERE {searchCondition}
               LIMIT @BoxesPerPage 
               OFFSET @Offset";
     
