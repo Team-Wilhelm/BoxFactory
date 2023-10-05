@@ -8,10 +8,19 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var Uri = new Uri(Environment.GetEnvironmentVariable("pgconn")!);
+
+var ProperlyFormattedConnectionString = string.Format(
+        "Server={0};Database={1};User Id={2};Password={3};Port={4};Pooling=true;MaxPoolSize=5;",
+        Uri.Host,
+        Uri.AbsolutePath.Trim('/'),
+        Uri.UserInfo.Split(':')[0],
+        Uri.UserInfo.Split(':')[1],
+        Uri.Port > 0 ? Uri.Port : 5432);
 
 builder.Services.AddSingleton<IDbConnection>(container =>
 {
-    var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("box_conn"));
+    var connection = new NpgsqlConnection(ProperlyFormattedConnectionString);
     connection.Open();
     return connection;
 });
@@ -37,7 +46,8 @@ app.UseCors(options =>
         .AllowCredentials();
 });
 
-app.UseExceptionHandler(a => a.Run(async context => {
+app.UseExceptionHandler(a => a.Run(async context =>
+{
     var trace = Activity.Current?.Id ?? context.TraceIdentifier;
     const int statusCode = StatusCodes.Status500InternalServerError;
 

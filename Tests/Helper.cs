@@ -12,11 +12,22 @@ public static class Helper
 
     static Helper()
     {
-        DbConnection = new NpgsqlConnection(Environment.GetEnvironmentVariable("box_conn"));
+        var Uri = new Uri(Environment.GetEnvironmentVariable("pgconn")!);
+
+        var ProperlyFormattedConnectionString = string.Format(
+            "Server={0};Database={1};User Id={2};Password={3};Port={4};Pooling=true;MaxPoolSize=5;",
+            Uri.Host,
+            Uri.AbsolutePath.Trim('/'),
+            Uri.UserInfo.Split(':')[0],
+            Uri.UserInfo.Split(':')[1],
+            Uri.Port > 0 ? Uri.Port : 5432);
+
+        DbConnection = new NpgsqlConnection(ProperlyFormattedConnectionString);
         DbConnection.Open();
     }
 
-    public static BoxCreateDto CreateBoxCreateDto(float weight, string colour, string material, float price, int stock, float height, float length, float width)
+    public static BoxCreateDto CreateBoxCreateDto(float weight, string colour, string material, float price, int stock,
+        float height, float length, float width)
     {
         return new BoxCreateDto()
         {
@@ -33,6 +44,7 @@ public static class Helper
             }
         };
     }
+
     public static void TriggerRebuild()
     {
         try
@@ -90,8 +102,8 @@ public static class Helper
         var boxDto = CreateBoxCreateDto(20, "red", "cardboard", 9, 20, 20, 20, 10);
         return await InsertBoxIntoDatabase(boxDto);
     }
-    
-     private static string RebuildScript = @"
+
+    private static string RebuildScript = @"
 DROP SCHEMA IF EXISTS testing CASCADE;
 CREATE SCHEMA testing;
 
