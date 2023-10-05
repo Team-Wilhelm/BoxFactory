@@ -65,6 +65,7 @@ public class BoxRepository
                     WHERE dimensions_id = @Id";
             box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
         }
+
         return enumerable;
     }
 
@@ -98,15 +99,8 @@ public class BoxRepository
 
     public async Task<Box> Create(Box box)
     {
-        var insertDimensionsSql = @$"INSERT INTO {_databaseSchema}.dimensions (length, width, height) 
-                                        VALUES (@Length, @Width, @Height) 
-                                        RETURNING
-                                            dimensions_id AS {nameof(Box.Dimensions.Id)},
-                                            length AS {nameof(Box.Dimensions.Length)},
-                                            width AS {nameof(Box.Dimensions.Width)},
-                                            height AS {nameof(Box.Dimensions.Height)}
-                                        ";
-        var dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(insertDimensionsSql, box.Dimensions);
+        var transaction = _dbConnection.BeginTransaction();
+        var dimensions = InsertDimensions(box.Dimensions, transaction);
 
         var sql =
             @$"INSERT INTO {_databaseSchema}.boxes (weight, colour, material, price, stock, dimensions_id, created_at)
@@ -132,12 +126,13 @@ public class BoxRepository
         });
 
         createdBox.Dimensions = dimensions;
+        transaction.Commit();
         return createdBox;
     }
 
     public async Task<Box> Update(Box box)
     {
-        //TODO: Resolve updating dimensions better
+        var transaction = _dbConnection.BeginTransaction();
         var sql = @$"UPDATE {_databaseSchema}.boxes 
                      SET weight = @Weight, colour = @Colour, material = @Material, price = @Price, stock = @Stock
                      WHERE box_id = @Id
@@ -161,9 +156,48 @@ public class BoxRepository
             box.Price
         });
 
+        updatedBox.Dimensions = UpdateDimensions(box.Id, box.Dimensions, transaction);
+        transaction.Commit();
+        return updatedBox;
+    }
+
+    public async Task Delete(Guid id)
+    {
+        using var transaction = _dbConnection.BeginTransaction();
+        try
+        {
+            var sql = $"DELETE FROM {_databaseSchema}.boxes WHERE box_id = @Id";
+            await _dbConnection.ExecuteAsync(sql, new { Id = id }, transaction);
+
+            // Commit the transaction
+            transaction.Commit();
+        }
+        catch (Exception)
+        {
+            // Handle any exceptions and possibly rollback the transaction
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+    private Dimensions InsertDimensions(Dimensions dimensions, IDbTransaction transaction)
+    {
+        var insertDimensionsSql = @$"INSERT INTO {_databaseSchema}.dimensions (length, width, height) 
+                                        VALUES (@Length, @Width, @Height) 
+                                        RETURNING
+                                            dimensions_id AS {nameof(Box.Dimensions.Id)},
+                                            length AS {nameof(Box.Dimensions.Length)},
+                                            width AS {nameof(Box.Dimensions.Width)},
+                                            height AS {nameof(Box.Dimensions.Height)}
+                                        ";
+        return _dbConnection.QuerySingle<Dimensions>(insertDimensionsSql, dimensions, transaction);
+    }
+
+    private Dimensions UpdateDimensions(Guid boxId, Dimensions dimensions, IDbTransaction transaction)
+    {
         var dimensionsId =
-            await _dbConnection.QuerySingleAsync<Guid>(
-                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { box.Id });
+            _dbConnection.QuerySingle<Guid>(
+                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = boxId });
 
         var dimensionsSql = @$"UPDATE {_databaseSchema}.dimensions
                               SET length = @Length, width = @Width, height = @Height
@@ -173,21 +207,13 @@ public class BoxRepository
                                     length AS {nameof(Box.Dimensions.Length)},
                                     width AS {nameof(Box.Dimensions.Width)},
                                     height AS {nameof(Box.Dimensions.Height)}
-                              ";
-
-        updatedBox.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new
+                            ";
+        return _dbConnection.QuerySingle<Dimensions>(dimensionsSql, new
         {
             Id = dimensionsId,
-            box.Dimensions.Length,
-            box.Dimensions.Width,
-            box.Dimensions.Height
+            dimensions.Length,
+            dimensions.Width,
+            dimensions.Height
         });
-        return updatedBox;
-    }
-
-    public async Task Delete(Guid id)
-    {
-        var sql = $"DELETE FROM {_databaseSchema}.boxes WHERE box_id = @Id";
-        await _dbConnection.ExecuteAsync(sql, new { Id = id });
     }
 }
