@@ -7,15 +7,15 @@ public class Dimensions
     public Guid Id { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Length { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Width { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Height { get; set; }
     
     public float Volume => Length * Width * Height;

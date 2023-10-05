@@ -49,24 +49,9 @@ public class BoxRepository
               LIMIT @BoxesPerPage 
               OFFSET @Offset";
         object queryParams = new { BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
-        var boxes = await _dbConnection.QueryAsync<Box>(boxSql, queryParams);
-
-        var enumerable = boxes.ToList();
-        foreach (var box in enumerable)
-        {
-            var dimensionsId = await _dbConnection.QuerySingleAsync<Guid>(
-                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = box.Id });
-            var dimensionsSql = @$"SELECT
-                         dimensions_id AS {nameof(Dimensions.Id)},
-                         length AS {nameof(Dimensions.Length)},
-                         width AS {nameof(Dimensions.Width)},
-                         height AS {nameof(Dimensions.Height)}
-                    FROM {_databaseSchema}.dimensions
-                    WHERE dimensions_id = @Id";
-            box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
-        }
-
-        return enumerable;
+        var boxes = (await _dbConnection.QueryAsync<Box>(boxSql, queryParams)).ToList();
+        boxes.ToList().ForEach(box => box.Dimensions = GetDimensionsByBoxId(box.Id));
+        return boxes;
     }
 
     public async Task<Box> Get(Guid id)
@@ -82,18 +67,7 @@ public class BoxRepository
                     FROM {_databaseSchema}.boxes
                     WHERE box_id = @Id";
         var box = await _dbConnection.QuerySingleAsync<Box>(boxSql, new { Id = id });
-
-        var dimensionsId =
-            await _dbConnection.QuerySingleAsync<Guid>(
-                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = id });
-        var dimensionsSql = @$"SELECT
-                         dimensions_id AS {nameof(Dimensions.Id)},
-                         length AS {nameof(Dimensions.Length)},
-                         width AS {nameof(Dimensions.Width)},
-                         height AS {nameof(Dimensions.Height)}
-                    FROM {_databaseSchema}.dimensions
-                    WHERE dimensions_id = @Id";
-        box.Dimensions = await _dbConnection.QuerySingleAsync<Dimensions>(dimensionsSql, new { Id = dimensionsId });
+        box.Dimensions = GetDimensionsByBoxId(box.Id);
         return box;
     }
 
@@ -215,5 +189,20 @@ public class BoxRepository
             dimensions.Width,
             dimensions.Height
         });
+    }
+
+    private Dimensions GetDimensionsByBoxId(Guid boxId)
+    {
+        var dimensionsId =
+            _dbConnection.QuerySingle<Guid>(
+                $"SELECT dimensions_id FROM {_databaseSchema}.boxes WHERE box_id = @Id", new { Id = boxId });
+        var dimensionsSql = @$"SELECT
+                         dimensions_id AS {nameof(Dimensions.Id)},
+                         length AS {nameof(Dimensions.Length)},
+                         width AS {nameof(Dimensions.Width)},
+                         height AS {nameof(Dimensions.Height)}
+                    FROM {_databaseSchema}.dimensions
+                    WHERE dimensions_id = @Id";
+        return _dbConnection.QuerySingle<Dimensions>(dimensionsSql, new { Id = dimensionsId });
     }
 }

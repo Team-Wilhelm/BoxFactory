@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -68,7 +69,12 @@ public class CreateTests
     }
 
     [Test]
-    [TestCase(20, "red", "cardboard", 9, -5,20, 20, 10)] //TODO Add bad data here
+    [TestCase(20, "red", "cardboard", 9, -5,20, 20, 10)]
+    [TestCase(20, "red", "cardboard", 9, 5, -20, 20, 10)]
+    [TestCase(20, "red", "cardboard", 9, 5, 20, -20, 10)]
+    [TestCase(20, "red", "cardboard", 9, 5, 20, 20, -10)]
+    [TestCase(20, "red", "cardboard", -9, 5, 20, 20, 10)]
+    [TestCase(-20, "red", "cardboard", 9, 5, 20, 20, 10)]
     public async Task CreateBoxBadData(float weight, string colour, string material, float price, int stock, float height, float length, float width)
     {
         // Arrange
@@ -92,6 +98,8 @@ public class CreateTests
         using (new AssertionScope())
         {
             response.IsSuccessStatusCode.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Content.ReadAsStringAsync().Result.Should().Contain("One or more validation errors occurred.");
         }
     }
 }

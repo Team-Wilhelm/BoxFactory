@@ -21,6 +21,8 @@ public class BoxController : ControllerBase
         [FromQuery] int boxesPerPage, [FromQuery] string? sortBy, [FromQuery] bool? descending)
     {
         var sorting = new Sorting(sortBy, descending);
+        currentPage = currentPage < 1 ? 1 : currentPage;
+        boxesPerPage = boxesPerPage < 1 ? 10 : boxesPerPage;
         return Ok(await _boxService.Get(searchTerm, currentPage, boxesPerPage, sorting));
     }
 

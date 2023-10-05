@@ -5,14 +5,14 @@ namespace Models.DTOs;
 public class DimensionsDto
 {
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Length { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Width { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Height { get; set; }
 }

@@ -26,7 +26,7 @@ public class SearchTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        for (int i = 0; i < 5; i++)
+        for (int i = 1; i <= 5; i++)
         {
             var boxDto = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             await Helper.InsertBoxIntoDatabase(boxDto);
@@ -87,7 +87,7 @@ public class SearchTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        for (int i = 0; i < 20; i++)
+        for (int i = 1; i <= 20; i++)
         {
             var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             await Helper.InsertBoxIntoDatabase(box);

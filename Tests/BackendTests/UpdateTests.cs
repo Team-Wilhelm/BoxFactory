@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
 
-public class UpdateTests
+public class  UpdateTests
 {
     private HttpClient _httpClient;
 

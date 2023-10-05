@@ -21,7 +21,7 @@ public class GetTests
         // Arrange
         Helper.TriggerRebuild();
         var expectedBoxes = new List<Box>();
-        for (int i = 0; i < 10; i++)
+        for (int i = 1; i < 10; i++)
         {
             var boxDto = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
             var box = await Helper.InsertBoxIntoDatabase(boxDto);
@@ -71,7 +71,7 @@ public class GetTests
         var boxDto = Helper.CreateBoxCreateDto(weight, colour, material, price, 1, height, length, width);
         var box = await Helper.InsertBoxIntoDatabase(boxDto);
 
-        var url = Helper.UrlBase + $"/box/{box.Id}"; //TODO add url
+        var url = Helper.UrlBase + $"/box/{box.Id}";
         
         // Act
         HttpResponseMessage response;
