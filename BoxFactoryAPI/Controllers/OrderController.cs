@@ -20,4 +20,32 @@ public class OrderController: ControllerBase
     {
         return await _orderService.Create(orderCreateDto);
     }
+    
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Order>>> Get()
+    {
+        return Ok(await _orderService.Get());
+    }
+    
+    [HttpGet("/status/{status}")]
+    //TODO: Add a route constraint to ensure that the status is a valid ShippingStatus
+    public async Task<ActionResult<IEnumerable<Order>>> GetByStatus(ShippingStatus status)
+    {
+        return Ok(await _orderService.GetByStatus(status));
+    }
+    
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> UpdateStatus(Guid id, ShippingStatus status)
+    {
+        await _orderService.UpdateStatus(id, status);
+        return Ok();
+    }
+    
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        await _orderService.Delete(id);
+        return Ok();
+    }
+    
 }
