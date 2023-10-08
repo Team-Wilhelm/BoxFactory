@@ -17,21 +17,16 @@ public class OrderService
     
     public async Task<Order> Create(OrderCreateDto orderCreateDto)
     {
-        /*var order = _mapper.Map<Order>(orderCreateDto);
-        order.CreatedAt = DateTime.Now;
-        order.UpdatedAt = DateTime.Now;
-        order.ShippingStatus = ShippingStatus.Preparing;
-        if (order.Boxes.Count != 0 && order.Customer is { Address: not null })
-        {
-            return await _orderRepository.Create(order);
-        }
-        throw new Exception("Missing data to create order.");*/
-        if (orderCreateDto.Boxes.Count != 0)
+        if (orderCreateDto.Boxes.Count == 0) throw new Exception("No boxes in order.");
+        try
         {
             return await _orderRepository.Create(orderCreateDto);
         }
-
-        throw new Exception();
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message, e.InnerException);
+            throw new Exception("Something went wrong while creating order.");
+        }
     }
     
     public async Task<IEnumerable<Order>> Get()

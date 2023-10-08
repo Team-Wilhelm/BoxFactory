@@ -23,7 +23,8 @@ public class OrderRepository
         using var transaction = _dbConnection.BeginTransaction();
         try
         {
-            var addressId = await CreateAddress(orderToCreate.Customer.Address, transaction);
+            var address = await CreateAddress(orderToCreate.Customer.Address, transaction);
+            var addressId = address.Id;
             await CreateCustomer(orderToCreate.Customer, transaction);
             await AddCustomerAddressLink(orderToCreate.Customer.Email, addressId, transaction);
             
@@ -34,18 +35,26 @@ public class OrderRepository
                                     order_id AS {nameof(Order.Id)},
                                     status AS {nameof(Order.ShippingStatus)},
                                     created_at AS {nameof(Order.CreatedAt)},
-                                    updated_at AS {nameof(Order.UpdatedAt)},
-                                    customer_email AS {nameof(Order.Customer)},
-                                    address_id AS {nameof(Order.Customer.Address)}";
+                                    updated_at AS {nameof(Order.UpdatedAt)}";
 
             var order = await _dbConnection.QuerySingleAsync<Order>(insertOrderSql, new
             {
-                ShippingStatus = ShippingStatus.Preparing.ToString(),
+                Status = ShippingStatus.Preparing.ToString(),
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                CustomerId = orderToCreate.Customer.Email,
+                CustomerEmail = orderToCreate.Customer.Email,
                 AddressId = addressId
             }, transaction);
+
+            var customer = new Customer
+            {
+                Email = orderToCreate.Customer.Email,
+                FirstName = orderToCreate.Customer.FirstName,
+                LastName = orderToCreate.Customer.LastName,
+                PhoneNumber = orderToCreate.Customer.PhoneNumber,
+                Address = address
+            };
+            order.Customer = customer;
             
             await AddBoxOrderLink(orderToCreate.Boxes, order.Id, transaction);
             
@@ -61,16 +70,23 @@ public class OrderRepository
     }
     
     // Create address if not exists & return Id (transaction)
-    public async Task<Guid> CreateAddress(CreateAddressDto addressToCreate, IDbTransaction transaction)
+    public async Task<Address> CreateAddress(CreateAddressDto addressToCreate, IDbTransaction transaction)
     {
         try
         {
             var insertAddressSql =
                 @$"INSERT INTO {_databaseSchema}.addresses (street_name, house_number, house_number_addition, city, postal_code, country) 
                                     VALUES (@StreetName, @HouseNumber, @HouseNumberAddition, @City, @PostalCode, @Country) 
-                                    RETURNING address_id";
-            var addressId = await _dbConnection.QuerySingleAsync<Guid>(insertAddressSql, addressToCreate, transaction);
-            return addressId;
+                                    RETURNING 
+                                        address_id AS {nameof(Address.Id)},
+                                        street_name AS {nameof(Address.StreetName)},
+                                        house_number AS {nameof(Address.HouseNumber)},
+                                        house_number_addition AS {nameof(Address.HouseNumberAddition)},
+                                        city AS {nameof(Address.City)},
+                                        postal_code AS {nameof(Address.PostalCode)},
+                                        country AS {nameof(Address.Country)}";
+            var address = await _dbConnection.QuerySingleAsync<Address>(insertAddressSql, addressToCreate, transaction);
+            return address;
         }
         catch (Exception e)
         {
@@ -80,13 +96,13 @@ public class OrderRepository
     }
     
     
-    // Create customer if not exists & return Id (transaction)
+    // Create customer if not exists (transaction)
     public async Task CreateCustomer(CreateCustomerDto customerToCreate, IDbTransaction transaction)
     {
         try
         {
             var insertCustomerSql =
-                @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, email, phone_number) 
+                @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, customer_email, phone_number) 
                                     VALUES (@FirstName, @LastName, @Email, @PhoneNumber)";
             await _dbConnection.ExecuteAsync(insertCustomerSql, customerToCreate, transaction);
         }
@@ -125,7 +141,7 @@ public class OrderRepository
                                     VALUES (@BoxId, @OrderId, @Quantity)";
             foreach (var box in boxes)
             {
-                await _dbConnection.QuerySingleAsync<Guid>(insertBoxOrderLinkSql,
+                await _dbConnection.ExecuteAsync(insertBoxOrderLinkSql,
                     new { BoxId = box.Key, OrderId = orderId, Quantity = box.Value }, transaction);
             }
         }
@@ -146,7 +162,7 @@ public class OrderRepository
     o.created_at AS {nameof(Order.CreatedAt)},
     o.updated_at AS {nameof(Order.UpdatedAt)},
     
-    c.email AS {nameof(Order.Customer.Email)},
+    c.customer_email AS {nameof(Order.Customer.Email)},
     c.first_name AS {nameof(Order.Customer.FirstName)},
     c.last_name AS {nameof(Order.Customer.LastName)},
     c.phone_number AS {nameof(Order.Customer.PhoneNumber)},
@@ -163,7 +179,7 @@ public class OrderRepository
         INNER JOIN {_databaseSchema}.customer c 
             ON o.customer_email = c.email 
         INNER JOIN {_databaseSchema}.customer_address_link cal 
-            ON c.email = cal.customer_email  
+            ON c.customer_email = cal.customer_email  
         INNER JOIN {_databaseSchema}.address a 
             ON cal.address_id = a.address_id";
         
