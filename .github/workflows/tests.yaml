@@ -12,8 +12,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+      
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          # Set health checks to wait until postgres has started
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
 
     steps:
+      - name: Start PostgreSQL on Ubuntu
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+
+      - name: Create additional user
+        run: |
+          sudo -u postgres psql --command="CREATE USER testuser PASSWORD 'password'" --command="\du"
+
+      - name: Create additional database
+        run: |
+            sudo -u postgres createdb TestDatabase --owner=testuser 
+            PGPASSWORD=password 
+      
+      - name: Enable uuid-ossp extension
+        run: |
+          echo "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";" | sudo -u postgres psql TestDatabase    
+        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Setup dotnet
@@ -25,6 +59,6 @@ jobs:
       - name: Start API, run tests, kill API
         run: (cd BoxFactoryAPI && dotnet run) &
           (sleep 20 && cd Tests && dotnet test) &
-          (sleep 40 && kill -9 $(lsof -t -i:5000))
+          (sleep 60 && kill -9 $(lsof -t -i:5133))
         env:
-          box_conn: ${{secrets.BOX_CONN}}
+          box_conn: Host=localhost;Database=TestDatabase;Username=testuser;Password=password
