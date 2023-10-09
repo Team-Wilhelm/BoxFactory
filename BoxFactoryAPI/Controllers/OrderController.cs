@@ -28,15 +28,14 @@ public class OrderController: ControllerBase
         return Ok(await _orderService.Get());
     }
     
-    [HttpGet("/status/{status}")]
-    //TODO: Add a route constraint to ensure that the status is a valid ShippingStatus
-    public async Task<ActionResult<IEnumerable<Order>>> GetByStatus(ShippingStatus status)
+    [HttpGet("status")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetByStatus([FromQuery]string status)
     {
         return Ok(await _orderService.GetByStatus(status));
     }
     
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateStatus(Guid id, ShippingStatus status)
+    public async Task<ActionResult> UpdateStatus(Guid id, string status)
     {
         await _orderService.UpdateStatus(id, status);
         return Ok();
