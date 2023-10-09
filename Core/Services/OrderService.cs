@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure;
 using Models;
+using Models.DTOs;
 
 namespace Core.Services;
 

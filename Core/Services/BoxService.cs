@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure;
 using Models;
+using Models.DTOs;
 using Models.Exceptions;
 
 namespace Core.Services;
@@ -16,9 +17,9 @@ public class BoxService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Box>> Get()
+    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage, Sorting? sorting)
     {
-        return await _boxRepository.Get();
+        return await _boxRepository.Get(searchTerm, currentPage, boxesPerPage, sorting);
     }
 
     public async Task<Box> Get(Guid id)

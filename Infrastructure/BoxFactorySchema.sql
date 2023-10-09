@@ -70,3 +70,18 @@ CREATE TABLE IF NOT EXISTS testing.Customer_Address_Link
     "customer_email" varchar REFERENCES testing.Customers ("customer_email"),
     "address_id"  uuid REFERENCES testing.Addresses ("address_id")
 );
+
+CREATE TABLE IF NOT EXISTS testing.Materials
+(
+    "name" varchar PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS testing.Colours 
+(
+    "name" varchar PRIMARY KEY
+);
+
+INSERT INTO testing.Materials (name) VALUES ('cardboard'), ('plastic'), ('wood'), ('metal');
+INSERT INTO testing.Colours (name) VALUES ('red'), ('blue'), ('green'), ('yellow'), ('black'), 
+                                          ('white'), ('brown'), ('grey'), ('orange'), ('purple'), 
+                                          ('pink'), ('gold'), ('silver'), ('bronze'), ('copper');
