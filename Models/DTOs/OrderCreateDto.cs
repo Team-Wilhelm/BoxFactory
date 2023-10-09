@@ -1,7 +1,7 @@
-﻿namespace Models.DTOs;
+﻿namespace Models;
 
 public class OrderCreateDto
 {
-    public Dictionary<Guid, int>? Boxes { get; set; }
-    public Customer? Customer { get; set; }
+    public Dictionary<Guid, int> Boxes { get; set; } = new();
+    public CreateCustomerDto? Customer { get; set; }
 }

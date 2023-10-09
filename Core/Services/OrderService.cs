@@ -18,14 +18,16 @@ public class OrderService
     
     public async Task<Order> Create(OrderCreateDto orderCreateDto)
     {
-        var order = _mapper.Map<Order>(orderCreateDto);
-        order.CreatedAt = DateTime.Now;
-        order.UpdatedAt = DateTime.Now;
-        if (order.Boxes != null && order.Boxes.Count != 0 && order.Customer is { Address: not null })
+        if (orderCreateDto.Boxes.Count == 0) throw new Exception("No boxes in order.");
+        try
         {
-            return await _orderRepository.Create(order);
+            return await _orderRepository.Create(orderCreateDto);
         }
-        throw new Exception("Missing data to create order.");
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message, e.InnerException);
+            throw new Exception("Something went wrong while creating order.");
+        }
     }
     
     public async Task<IEnumerable<Order>> Get()
@@ -36,8 +38,49 @@ public class OrderService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(e.Message, e.InnerException);
             throw new Exception("Something went wrong while fetching orders.");
+        }
+    }
+
+    public async Task<IEnumerable<Order>> GetByStatus(ShippingStatus status)
+    {
+        try
+        {
+            return await _orderRepository.GetByStatus(status);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message, e.InnerException);
+            throw new Exception("Something went wrong while fetching these orders.");
+        }
+    }
+    
+    public async Task UpdateStatus(Guid id, ShippingStatus status)
+    {
+        if (ShippingStatus.Received != status) throw new Exception("Cannot update an order being prepared or shipped.");
+        
+            try
+            {
+                await _orderRepository.UpdateStatus(id, status);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message, e.InnerException);
+                throw new Exception("Something went wrong while updating order status.");
+            }
+    }
+    
+    public async Task Delete(Guid id)
+    {
+        try
+        {
+            await _orderRepository.Delete(id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message, e.InnerException);
+            throw new Exception("Something went wrong while deleting order.");
         }
     }
 }

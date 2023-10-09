@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS testing.Boxes
 
 CREATE TABLE IF NOT EXISTS testing.Customers
 (
-    email        varchar PRIMARY KEY,
+    customer_email        varchar PRIMARY KEY,
     phone_number varchar(20),
     first_name   varchar(25),
     last_name    varchar
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS testing.Orders
     status      varchar(25),
     created_at  timestamp,
     updated_at  timestamp,
-    customer_email varchar REFERENCES testing.Customers (email),
+    customer_email varchar REFERENCES testing.Customers (customer_email),
     address_id  uuid REFERENCES testing.Addresses (address_id)
 );
 
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS testing.Customer_Address_Link
         customer_email,
         address_id
     ),
-    customer_email varchar REFERENCES testing.Customers (email),
+    customer_email varchar REFERENCES testing.Customers (customer_email),
     address_id  uuid REFERENCES testing.Addresses (address_id)
 );
 
