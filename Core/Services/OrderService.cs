@@ -2,6 +2,7 @@
 using Infrastructure;
 using Models;
 using Models.DTOs;
+using Models.Models;
 
 namespace Core.Services;
 

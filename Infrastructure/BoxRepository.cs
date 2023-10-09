@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using Dapper;
 using Models;
+using Models.Models;
+using Models.Util;
 
 namespace Infrastructure;
 
@@ -21,18 +23,24 @@ public class BoxRepository
         _materials = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.materials").ToList();
     }
 
-    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage, Sorting? sorting)
+    public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
     {
         //TODO: Resolve searching by multiple words to only include boxes that match all words
-        //TODO: Please refactor this method to use Dapper's multi-mapping feature instead of the foreach loop to avoid certain doom.
 
         var searchQuery = "";
-        if (!string.IsNullOrWhiteSpace(searchTerm))
+        if (!string.IsNullOrWhiteSpace(boxParameters.SearchTerm))
         {
-            var searchTerms = searchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var searchCondition = string.Join(" AND ", searchTerms.Select(term => $"(colour ILIKE '%{term}%' " +
-                $"OR material ILIKE '%{term}%')"));
-            searchQuery = $"WHERE {searchCondition}";
+            var searchTerms = boxParameters.SearchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var searchCondition = new List<string>();
+            var parameters = new DynamicParameters(); // To avoid SQL injection
+            for (int i = 0; i < searchTerms.Length; i++)
+            {
+                var term = $"@term{i}";
+                searchCondition.Add($"(colour ILIKE {term} OR material ILIKE {term})");
+                parameters.Add(term, $"%{searchTerms[i]}%");
+            }
+
+            searchQuery = $"WHERE {string.Join(" AND ", searchCondition)}";
         }
 
         var boxSql = @$"SELECT
@@ -45,10 +53,11 @@ public class BoxRepository
                  price AS {nameof(Box.Price)}
               FROM {_databaseSchema}.boxes
               {searchQuery}
-              {sorting?.Query}
+              {sorting.Query}
               LIMIT @BoxesPerPage 
               OFFSET @Offset";
-        object queryParams = new { BoxesPerPage = boxesPerPage, Offset = (currentPage - 1) * boxesPerPage };
+        object queryParams = new
+            { boxParameters.BoxesPerPage, Offset = (boxParameters.CurrentPage - 1) * boxParameters.BoxesPerPage };
         var boxes = (await _dbConnection.QueryAsync<Box>(boxSql, queryParams)).ToList();
         boxes.ToList().ForEach(box => box.Dimensions = GetDimensionsByBoxId(box.Id));
         return boxes;
@@ -138,6 +147,7 @@ public class BoxRepository
     public async Task Delete(Guid id)
     {
         using var transaction = _dbConnection.BeginTransaction();
+        //TODO: Delete dimensions
         try
         {
             var sql = $"DELETE FROM {_databaseSchema}.boxes WHERE box_id = @Id";
@@ -205,6 +215,4 @@ public class BoxRepository
                     WHERE dimensions_id = @Id";
         return _dbConnection.QuerySingle<Dimensions>(dimensionsSql, new { Id = dimensionsId });
     }
-    
-    // TODO: Delete this line comment
 }

@@ -1,11 +1,10 @@
-namespace Models;
+﻿namespace Models.DTOs;
 
-public class Customer
+public class CreateCustomerDto
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Email { get; set; }
-    public Address? Address { get; set; }
+    public CreateAddressDto? Address { get; set; }
     public string? PhoneNumber { get; set; }
-    public List<Order>? Orders { get; set; }
 }

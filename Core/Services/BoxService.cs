@@ -3,6 +3,8 @@ using Infrastructure;
 using Models;
 using Models.DTOs;
 using Models.Exceptions;
+using Models.Models;
+using Models.Util;
 
 namespace Core.Services;
 
@@ -17,9 +19,9 @@ public class BoxService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Box>> Get(string? searchTerm, int currentPage, int boxesPerPage, Sorting? sorting)
+    public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
     {
-        return await _boxRepository.Get(searchTerm, currentPage, boxesPerPage, sorting);
+        return await _boxRepository.Get(boxParameters, sorting);
     }
 
     public async Task<Box> Get(Guid id)

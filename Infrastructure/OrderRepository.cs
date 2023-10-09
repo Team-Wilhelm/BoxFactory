@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using Dapper;
 using Models;
+using Models.DTOs;
+using Models.Models;
 
 namespace Infrastructure;
 

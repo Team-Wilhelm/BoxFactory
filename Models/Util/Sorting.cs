@@ -1,4 +1,4 @@
-namespace Models;
+namespace Models.Util;
 
 public class Sorting
 {
