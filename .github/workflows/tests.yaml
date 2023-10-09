@@ -59,6 +59,6 @@ jobs:
       - name: Start API, run tests, kill API
         run: (cd BoxFactoryAPI && dotnet run) &
           (sleep 20 && cd Tests && dotnet test) &
-          (sleep 60 && kill -9 $(lsof -t -i:5000))
+          (sleep 60 && kill -9 $(lsof -t -i:5133))
         env:
           box_conn: Host=localhost;Database=TestDatabase;Username=testuser;Password=password
