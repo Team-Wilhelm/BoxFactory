@@ -30,6 +30,20 @@ jobs:
             --health-retries 5
 
     steps:
+      - name: Start PostgreSQL on Ubuntu
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+
+      - name: Create additional user
+        run: |
+          sudo -u postgres psql --command="CREATE USER testuser PASSWORD 'password'" --command="\du"
+
+      - name: Create additional database
+        run: |
+            sudo -u postgres createdb TestDatabase --owner=testuser 
+            PGPASSWORD=password 
+        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Setup dotnet
@@ -43,4 +57,4 @@ jobs:
           (sleep 20 && cd Tests && dotnet test) &
           (sleep 40 && kill -9 $(lsof -t -i:5000))
         env:
-          box_conn: Host=postgres;Port=5432;Database=boxfactory;Username=postgres;Password=postgres
+          box_conn: Host=localhost;Database=TestDatabase;Username=testuser;Password=password
