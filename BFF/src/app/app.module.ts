@@ -7,7 +7,7 @@ import { NavMenuComponent } from "./nav-menu/nav-menu.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import {HomeComponent} from "./home/home.component";
 import {BoxListModule} from "./boxlist/boxlist.module";
-import {NG_VALIDATORS} from "@angular/forms";
+import {NG_VALIDATORS, ReactiveFormsModule} from "@angular/forms";
 import {positiveNumberValidator} from "./positiveNumberValidator";
 
 @NgModule({
@@ -21,9 +21,10 @@ import {positiveNumberValidator} from "./positiveNumberValidator";
     AppRoutingModule,
     NgApexchartsModule,
     BoxListModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
-  providers: [{provide: NG_VALIDATORS, useExisting: positiveNumberValidator, multi: true}],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

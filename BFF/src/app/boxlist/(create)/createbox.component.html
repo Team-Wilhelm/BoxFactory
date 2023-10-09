@@ -1,6 +1,6 @@
 <dialog id="create_box" class="modal">
   <div class="modal-box">
-    <form method="dialog" (ngSubmit)="onCreateBox()" [formGroup]="boxForm">
+    <form method="dialog" (ngSubmit)="onCreateBox($event)" [formGroup]="boxForm">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
 
       <div class="flex flex-col">

@@ -1,10 +1,9 @@
 ﻿import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from "@angular/forms";
 
-export function positiveNumberValidator() : ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const positive = control.value > 0;
-    console.log('Control value:', control.value); // Add this line
-    console.log('Is positive?', positive); // And this line
-    return positive ? null : {positiveNumber: {value: control.value}}
-  };
+export function positiveNumberValidator(control: AbstractControl)  {
+  const value = parseInt(control.value);
+  if (value > 0) {
+    return null;
+  }
+  return {positiveNumber: false};
 }
