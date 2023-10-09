@@ -3,3 +3,9 @@ export interface Dimensions {
   width: number;
   height: number;
 }
+
+export interface DimensionsDto {
+  length: number;
+  width: number;
+  height: number;
+}

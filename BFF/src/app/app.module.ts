@@ -7,6 +7,8 @@ import { NavMenuComponent } from "./nav-menu/nav-menu.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import {HomeComponent} from "./home/home.component";
 import {BoxListModule} from "./boxlist/boxlist.module";
+import {NG_VALIDATORS} from "@angular/forms";
+import {positiveNumberValidator} from "./positiveNumberValidator";
 
 @NgModule({
   declarations: [
@@ -21,7 +23,7 @@ import {BoxListModule} from "./boxlist/boxlist.module";
     BoxListModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{provide: NG_VALIDATORS, useExisting: positiveNumberValidator, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
