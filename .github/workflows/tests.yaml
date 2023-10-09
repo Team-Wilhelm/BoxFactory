@@ -12,6 +12,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+      
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          # Set health checks to wait until postgres has started
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -23,27 +39,8 @@ jobs:
             8.0.x
 
       - name: Start API, run tests, kill API
-        run: | 
-          (cd BoxFactoryAPI && dotnet run) &
-          api_pid=$!  # Get the process ID of the API
-          
-          # Wait for the API to become available
-          for i in {1..60}; do  # Wait for up to 60 seconds (adjust as needed)
-          sleep 1
-          response=$(curl -sSf http://localhost:5000)  # Try to make a request to the API
-          if [ "$?" -eq 0 ] && [ "$response" == "API is up!" ]; then
-          break  # API is up, break out of the loop
-          fi
-          done
-          
-          if [ "$i" -eq 60 ]; then
-          echo "API did not start within the timeout."
-          exit 1
-          fi
-          
-          (cd Tests && dotnet test)  # Run tests after API is up and running
-          
-          # Kill the API
-          kill -9 $api_pid
+        run: (cd BoxFactoryAPI && dotnet run) &
+          (sleep 20 && cd Tests && dotnet test) &
+          (sleep 40 && kill -9 $(lsof -t -i:5000))
         env:
-          box_conn: ${{secrets.BOX_CONN}}
+          box_conn: Host=postgres;Port=5432;Database=boxfactory;Username=postgres;Password=postgres
