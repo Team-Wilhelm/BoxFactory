@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 using Models;
+using Models.DTOs;
 using Npgsql;
 
 namespace Tests;
@@ -117,8 +118,7 @@ CREATE TABLE IF NOT EXISTS testing.Boxes
 
 CREATE TABLE IF NOT EXISTS testing.Customers
 (
-    customer_id  uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email        varchar,
+    email        varchar PRIMARY KEY,
     phone_number varchar(20),
     first_name   varchar(25),
     last_name    varchar
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS testing.Orders
     status      varchar(25),
     created_at  timestamp,
     updated_at  timestamp,
-    customer_id uuid REFERENCES testing.Customers (customer_id),
+    customer_email varchar REFERENCES testing.Customers (email),
     address_id  uuid REFERENCES testing.Addresses (address_id)
 );
 
@@ -159,11 +159,26 @@ CREATE TABLE IF NOT EXISTS testing.Box_Order_Link
 CREATE TABLE IF NOT EXISTS testing.Customer_Address_Link
 (
     PRIMARY KEY (
-        customer_id,
+        customer_email,
         address_id
     ),
-    customer_id uuid REFERENCES testing.Customers (customer_id),
+    customer_email varchar REFERENCES testing.Customers (email),
     address_id  uuid REFERENCES testing.Addresses (address_id)
 );
+
+CREATE TABLE IF NOT EXISTS testing.Materials
+(
+    name varchar PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS testing.Colours 
+(
+    name varchar PRIMARY KEY
+);
+
+INSERT INTO testing.Materials (name) VALUES ('cardboard'), ('plastic'), ('wood'), ('metal');
+INSERT INTO testing.Colours (name) VALUES ('red'), ('blue'), ('green'), ('yellow'), ('black'), 
+                                          ('white'), ('brown'), ('grey'), ('orange'), ('purple'), 
+                                          ('pink'), ('gold'), ('silver'), ('bronze'), ('copper');
  ";
 }

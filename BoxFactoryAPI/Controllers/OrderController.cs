@@ -1,6 +1,7 @@
 ﻿using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.DTOs;
 
 namespace BoxFactoryAPI.Controllers;
 

@@ -7,7 +7,7 @@ public class Box
     public Guid Id { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Weight { get; set; }
     
     public string? Colour { get; set; }
@@ -17,10 +17,10 @@ public class Box
     public DateTime CreatedAt { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public int Stock { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [PositiveNumber]
     public float Price { get; set; }
 }
