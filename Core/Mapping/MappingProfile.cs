@@ -1,5 +1,6 @@
 using AutoMapper;
 using Models;
+using Models.DTOs;
 
 namespace Core.Mapping;
 

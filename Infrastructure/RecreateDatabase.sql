@@ -28,8 +28,7 @@ BEGIN
           ')';
 
     EXECUTE 'CREATE TABLE IF NOT EXISTS ' || schema_to_create || '."Customers" (' ||
-            '"customer_id" uuid PRIMARY KEY, ' ||
-            '"email" varchar, ' ||
+            '"customer_email" varchar PRIMARY KEY, ' ||
             '"phone_number" varchar(25), ' ||
             '"first_name" varchar(25), ' ||
             '"last_name" varchar, ' ||
@@ -50,7 +49,7 @@ BEGIN
             '"status" varchar(25), ' ||
             '"created_at" timestamp, ' ||
             '"updated_at" timestamp, ' ||
-            '"customer_id" uuid REFERENCES "Customers" ("customer_id"), ' ||
+            '"customer_email" uuid REFERENCES "Customers" ("customer_email"), ' ||
             '"address_id" uuid REFERENCES "Addresses" ("address_id")' ||
             ')';
     
@@ -76,15 +75,15 @@ BEGIN
             ')';
     
     EXECUTE 'CREATE TABLE IF NOT EXISTS ' || schema_to_create || '."Customer_Address_Link" (' ||
-            '"customer_id" uuid, ' ||
+            '"customer_email" varchar, ' ||
             '"address_id" uuid, ' ||
-            'PRIMARY KEY ("customer_id", "address_id"), ' ||
-            'FOREIGN KEY ("customer_id") REFERENCES ' || schema_to_create || '."Customers" ("customer_id") ON DELETE CASCADE, ' ||
+            'PRIMARY KEY ("customer_email", "address_id"), ' ||
+            'FOREIGN KEY ("customer_email") REFERENCES ' || schema_to_create || '."Customers" ("customer_email") ON DELETE CASCADE, ' ||
             'FOREIGN KEY ("address_id") REFERENCES ' || schema_to_create || '."Addresses" ("address_id") ON DELETE CASCADE' ||
             ')';
     
     -- Add foreign key constraints using the schema name
-    EXECUTE 'ALTER TABLE ' || schema_to_create || '."Orders" ADD FOREIGN KEY ("customer_id") REFERENCES ' || schema_to_create || '."Customers" ("customer_id")';
+    EXECUTE 'ALTER TABLE ' || schema_to_create || '."Orders" ADD FOREIGN KEY ("customer_email") REFERENCES ' || schema_to_create || '."Customers" ("customer_email")';
     EXECUTE 'ALTER TABLE ' || schema_to_create || '."Orders" ADD FOREIGN KEY ("address_id") REFERENCES ' || schema_to_create || '."Addresses" ("address_id")';
     -- Add other foreign key constraints in a similar manner
 

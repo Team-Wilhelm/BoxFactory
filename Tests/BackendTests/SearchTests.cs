@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Json;
-using Dapper;
+﻿using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
@@ -19,19 +18,31 @@ public class SearchTests
     
     [Test]
     [TestCase("red", 1, 10)]
+    [TestCase("cardboard", 1, 10)]
+    [TestCase("plastic", 1, 10)]
+    [TestCase("blue", 1, 10)]
+    [TestCase("red plastic", 1, 10)]
     public async Task SearchAllBoxesPaginatedSuccessfully(string searchTerm, int currentPage, int boxesPerPage)
     {
         // Arrange
         Helper.TriggerRebuild();
-        for (int i = 0; i < 20; i++)
+        for (int i = 1; i <= 5; i++)
         {
-            var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
-            var sql = $@""; //TODO add sql
-            await Helper.DbConnection.ExecuteAsync(sql, box);
+            var boxDto = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
+            await Helper.InsertBoxIntoDatabase(boxDto);
+            
+            boxDto = Helper.CreateBoxCreateDto(i, "blue", "plastic", i, i, i, i, i);
+            await Helper.InsertBoxIntoDatabase(boxDto);
+            
+            boxDto = Helper.CreateBoxCreateDto(i, "red", "plastic", i, i, i, i, i);
+            await Helper.InsertBoxIntoDatabase(boxDto);
+            
+            boxDto = Helper.CreateBoxCreateDto(i, "blue", "cardboard", i, i, i, i, i);
+            await Helper.InsertBoxIntoDatabase(boxDto);
         }
         
         // Act
-        var url = $"http://localhost:!!!ADD:ME!!!!searchTerm={searchTerm}&currentPage={currentPage}&boxesPerPage={boxesPerPage}"; //TODO add url
+        var url = Helper.UrlBase + $"/box?searchTerm={searchTerm}&currentPage={currentPage}&boxesPerPage={boxesPerPage}";
         HttpResponseMessage response;
         try
         {
@@ -55,13 +66,18 @@ public class SearchTests
             throw new Exception(e.Message, e.InnerException);
         }
 
+        // Count the amount of boxes with the search term, which can be either in the colour or material column,
+        // with multiple words, both words must be present in either the colour or material column.
+        var enumerable = boxes.ToList();
+        var searchWords = searchTerm.Split(' ');
+        var count = enumerable.Count(box => searchWords.Any(word => box.Colour.Contains(word) || box.Material.Contains(word)));
+                    
         // Assert
         using (new AssertionScope())
         {
             response.IsSuccessStatusCode.Should().BeTrue();
-            var boxArray = boxes as Box[] ?? boxes.ToArray();
-            boxArray.Length.Equals(10).Should().BeTrue();
-            boxArray.Length.Equals(11).Should().BeFalse();
+            var boxArray = boxes as Box[] ?? enumerable.ToArray();
+            boxArray.Length.Equals(count).Should().BeTrue();
         }
     }
 
@@ -71,15 +87,14 @@ public class SearchTests
     {
         // Arrange
         Helper.TriggerRebuild();
-        for (int i = 0; i < 20; i++)
+        for (int i = 1; i <= 20; i++)
         {
             var box = Helper.CreateBoxCreateDto(i, "red", "cardboard", i, i, i, i, i);
-            var sql = $@""; //TODO add sql
-            await Helper.DbConnection.ExecuteAsync(sql, box);
+            await Helper.InsertBoxIntoDatabase(box);
         }
         
         // Act
-        var url = $"http://localhost:!!!ADD:ME!!!!searchTerm={searchTerm}&currentPage={currentPage}&boxesPerPage={boxesPerPage}"; //TODO add url
+        var url = Helper.UrlBase + $"/box?searchTerm={searchTerm}&currentPage={currentPage}&boxesPerPage={boxesPerPage}";
         HttpResponseMessage response;
         try
         {
@@ -109,5 +124,4 @@ public class SearchTests
             boxes.Should().BeEmpty();
         }
     }
-    
 }

@@ -1,7 +1,7 @@
-using System.Collections;
 using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.DTOs;
 
 namespace BoxFactoryAPI.Controllers;
 
@@ -17,27 +17,31 @@ public class BoxController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Box>>> Get()
+    public async Task<ActionResult<IEnumerable<Box>>> Get([FromQuery] string? searchTerm, [FromQuery] int currentPage, 
+        [FromQuery] int boxesPerPage, [FromQuery] string? sortBy, [FromQuery] bool? descending)
     {
-        return Ok(await _boxService.Get());
+        var sorting = new Sorting(sortBy, descending);
+        currentPage = currentPage < 1 ? 1 : currentPage;
+        boxesPerPage = boxesPerPage < 1 ? 10 : boxesPerPage;
+        return Ok(await _boxService.Get(searchTerm, currentPage, boxesPerPage, sorting));
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Box>> Get([FromRoute] Guid id)
     {
-        return await _boxService.Get(id);
+        return Ok(await _boxService.Get(id));
     }
 
     [HttpPost]
     public async Task<ActionResult<Box>> Create([FromBody] BoxCreateDto boxCreateDto)
     {
-        return await _boxService.Create(boxCreateDto);
+        return Ok(await _boxService.Create(boxCreateDto));
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<Box>> Update([FromRoute] Guid id, [FromBody] BoxUpdateDto boxUpdateDto)
     {
-        return await _boxService.Update(id, boxUpdateDto);
+        return Ok(await _boxService.Update(id, boxUpdateDto));
     }
 
     [HttpDelete("{id:guid}")]
