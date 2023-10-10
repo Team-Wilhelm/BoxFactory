@@ -6,6 +6,7 @@ import {Box} from "../../interfaces/box-inteface";
 import {CreateCustomerDto} from "../../interfaces/customer-interface";
 import {CreateAddressDto} from "../../interfaces/address-interface";
 import {OrderService} from "../../services/order-service";
+import {FormControl, Validators} from "@angular/forms";
 
 @Component({
   selector: 'create-box',
@@ -18,6 +19,7 @@ export class CreateorderComponent {
   boxes: Box[];
   addedBoxes: Record<string, number> = {};
   activeTab: string;
+  amountFormControl = new FormControl(1, [Validators.required, Validators.min(1)]);
 
   constructor(public boxService: BoxService, public orderService: OrderService) {
     this.boxes = boxService.boxes;
@@ -63,4 +65,6 @@ export class CreateorderComponent {
   async onCreateOrder() {
     await this.orderService.create(this.order);
   }
+
+  protected readonly parseInt = parseInt;
 }

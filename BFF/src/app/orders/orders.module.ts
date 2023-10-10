@@ -3,7 +3,7 @@ import {OrdersComponent} from "./orders.component";
 import {ListComponent} from "./list/list.component";
 import {CommonModule} from "@angular/common";
 import {CreateorderComponent} from "./(create)/createorder.component";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -11,10 +11,11 @@ import {FormsModule} from "@angular/forms";
     ListComponent,
     CreateorderComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule
+    ],
   providers: [],
   bootstrap: [OrdersComponent]
 })

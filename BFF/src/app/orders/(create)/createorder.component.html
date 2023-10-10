@@ -25,9 +25,10 @@
             <select #boxId class="select select-bordered w-full max-w-xs join-item">
               <option *ngFor="let box of boxes" [value]="box.id">{{ box.colour + ', ' + box.material + ', H: ' + box.dimensions?.height + ', L: ' + box.dimensions?.length + ', W: ' + box.dimensions?.width }}</option>
             </select>
-            <input #boxAmount type="number" placeholder="Enter amount" class="input input-bordered join-item" required
+            <input #boxAmount type="number" placeholder="Enter amount" class="input input-bordered join-item" required [formControl]="amountFormControl"
                    style="width: 100px"/>
-            <button class="btn btn-secondary join-item" (click)="addBox(boxId.value, boxAmount.value, $event)">
+            <button class="btn btn-secondary join-item" (click)="addBox(boxId.value, boxAmount.value, $event)"
+                    [disabled]="parseInt(boxAmount.value) < 1">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                    class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
