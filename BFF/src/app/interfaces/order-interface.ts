@@ -20,3 +20,7 @@ export enum ShippingStatus {
   Preparing = 'Preparing',
   Shipped = 'Shipped'
 }
+
+export interface ShippingStatusDto {
+  shippingStatus: ShippingStatus;
+}
