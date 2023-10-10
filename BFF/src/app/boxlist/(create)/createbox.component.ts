@@ -19,7 +19,7 @@ export class CreateboxComponent {
     width: new FormControl(0, [Validators.required, positiveNumberValidator]),
     height: new FormControl(0, [Validators.required, positiveNumberValidator]),
     price: new FormControl(0, [Validators.required, positiveNumberValidator]),
-    stock: new FormControl(0, [Validators.required]),
+    stock: new FormControl(0, [Validators.required, Validators.min(0)]),
     colour: new FormControl(''),
     material: new FormControl(''),
   });
@@ -47,6 +47,7 @@ export class CreateboxComponent {
         });
 
         this.boxService.boxes.push(createdBox);
+        this.boxForm.reset();
       } catch (error) {
         console.error(error);
       }
