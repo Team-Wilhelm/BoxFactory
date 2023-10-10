@@ -1,4 +1,4 @@
-import {Dimensions} from "./dimension-interface";
+import {Dimensions, DimensionsDto} from "./dimension-interface";
 
 export interface Box {
   id: string; // Guids are represented as strings in Typescript
@@ -15,7 +15,7 @@ export interface BoxCreateDto {
   weight: number;
   colour?: string;
   material?: string;
-  dimensions?: Dimensions; // Assuming Dimensions is another interface we defined in TypeScript
+  dimensionsDto?: DimensionsDto; // Assuming Dimensions is another interface we defined in TypeScript
   stock: number; // int in C# = number in TypeScript
   price: number; // float in C# = number in TypeScript
 }

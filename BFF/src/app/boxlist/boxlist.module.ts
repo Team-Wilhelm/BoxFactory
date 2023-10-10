@@ -3,7 +3,7 @@ import {BoxListComponent} from "./boxlist.component";
 import {ListComponent} from "./list/list.component";
 import {CommonModule} from "@angular/common";
 import {CreateboxComponent} from "./(create)/createbox.component";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -13,7 +13,8 @@ import {FormsModule} from "@angular/forms";
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [BoxListComponent]
