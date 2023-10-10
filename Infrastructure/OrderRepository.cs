@@ -104,8 +104,8 @@ public class OrderRepository
     // Update shipping status
     public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
     {
-        var updateOrderStatusSql = $"UPDATE {_databaseSchema}.orders SET status = @Status WHERE order_id = @Id";
-        await _dbConnection.ExecuteAsync(updateOrderStatusSql, new { Id = id, Status = status.ShippingStatus.ToString() });
+        var updateOrderStatusSql = $"UPDATE {_databaseSchema}.orders SET status = @Status, updated_at = @UpdatedAt WHERE order_id = @Id";
+        await _dbConnection.ExecuteAsync(updateOrderStatusSql, new { Id = id, Status = status.ShippingStatus.ToString(), UpdatedAt = DateTime.Now });
     }
     
     // Delete order if received
