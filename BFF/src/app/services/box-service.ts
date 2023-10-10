@@ -64,6 +64,6 @@ export class BoxService {
   }
 
   public delete(id: string) : Observable<any> {
-    return this.http.delete(`${this.apiUrl}/box/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {BoxService} from "../../services/box-service";
+import {OrderService} from "../../services/order-service";
 
 @Component({
   selector: 'app-box-list',
@@ -7,6 +7,6 @@ import {BoxService} from "../../services/box-service";
 })
 export class ListComponent {
 
-  constructor(public boxService: BoxService) {
+  constructor(public orderService: OrderService) {
   }
 }

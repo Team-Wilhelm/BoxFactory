@@ -9,6 +9,7 @@ import {HomeComponent} from "./home/home.component";
 import {BoxListModule} from "./boxlist/boxlist.module";
 import {NG_VALIDATORS, ReactiveFormsModule} from "@angular/forms";
 import {positiveNumberValidator} from "./positiveNumberValidator";
+import {OrdersModule} from "./orders/orders.module";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {positiveNumberValidator} from "./positiveNumberValidator";
     NgApexchartsModule,
     BoxListModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    OrdersModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
