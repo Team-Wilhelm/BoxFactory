@@ -1,0 +1,89 @@
+<dialog id="create_box" class="modal">
+  <div class="modal-box">
+    <form method="dialog" (ngSubmit)="onCreateBox($event)" [formGroup]="boxForm">
+      <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="create_box.close()">✕</button>
+
+      <div class="flex flex-col">
+        <div class="prose">
+          <h2>
+            Create new Box:
+          </h2>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Weight:</span>
+          </label>
+          <input type="number" placeholder="Enter weight" class="input input-bordered w-full"
+                 id="weight" name="weight" [formControl]="boxForm.controls.weight"/>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Colour:</span>
+          </label>
+          <input type="text" placeholder="Enter colour" class="input input-bordered w-full"
+                 id="colour" name="colour" [formControl]="boxForm.controls.colour"/>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Material:</span>
+          </label>
+          <input type="text" placeholder="Enter material" class="input input-bordered w-full"
+                 id="material" name="material" [formControl]="boxForm.controls.material"/>
+        </div>
+
+        <div class="divider">Dimensions</div>
+
+        <div class="flex gap-3">
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Length:</span>
+            </label>
+            <input type="number" placeholder="Enter length" class="input input-bordered w-full"
+                   id="length" name="length" [formControl]="boxForm.controls.length"/>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Width:</span>
+            </label>
+            <input type="number" placeholder="Enter width" class="input input-bordered w-full"
+                   id="width" name="width" [formControl]="boxForm.controls.width"/>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Height:</span>
+            </label>
+            <input type="number" placeholder="Enter height" class="input input-bordered w-full"
+                   id="height" name="height" [formControl]="boxForm.controls.height"/>
+          </div>
+
+        </div>
+
+        <div class="divider">Price</div>
+        <div class="flex gap-3 mb-3">
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Price:</span>
+            </label>
+            <input type="number" placeholder="Enter price" class="input input-bordered w-full"
+                   id="price" name="price" [formControl]="boxForm.controls.price"/>
+          </div>
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Stock:</span>
+            </label>
+            <input type="number" placeholder="Enter stock" class="input input-bordered w-full"
+                   id="stock" name="stock" [formControl]="boxForm.controls.stock"/>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit" [disabled]="!boxForm.valid">Create New</button>
+      </div>
+    </form>
+  </div>
+</dialog>

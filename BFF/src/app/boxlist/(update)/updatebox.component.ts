@@ -1,17 +1,17 @@
 import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {BoxService} from "../../services/box-service";
-import {BoxCreateDto} from "../../interfaces/box-inteface";
+import {BoxUpdateDto} from "../../interfaces/box-inteface";
 import {DimensionsDto} from "../../interfaces/dimension-interface";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {positiveNumberValidator} from "../../positiveNumberValidator";
 import {min} from "rxjs";
 
 @Component({
-  selector: 'create-box',
-  templateUrl: './createbox.component.html',
+  selector: 'update-box',
+  templateUrl: './updatebox.component.html',
 })
-export class CreateboxComponent {
-  box: BoxCreateDto;
+export class UpdateboxComponent {
+  box: BoxUpdateDto;
   dimensions: DimensionsDto;
   boxForm = new FormGroup({
     weight: new FormControl(0, [Validators.required, positiveNumberValidator]),
@@ -29,7 +29,7 @@ export class CreateboxComponent {
     this.box = {weight: 0, colour: "", material: "", dimensionsDto: this.dimensions, price: 0, stock: 0};
   }
 
-  async onCreateBox(event: Event) {
+  async onUpdateBox(event: Event) {
     console.log(this.boxForm.valid);
     if (this.boxForm.valid) {
       try {
