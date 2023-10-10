@@ -74,7 +74,22 @@ export class OrderService {
   }
 
   public async getLatest() : Promise<Order[]> {
-    const call = this.http.get<Order[]>(`${this.apiUrl}/Latest`);
+    const call = this.http.get<Order[]>(`${this.apiUrl}/latest`);
+    return await firstValueFrom(call);
+  }
+
+  public async getTotalRevenue() : Promise<number> {
+    const call = this.http.get<number>(`${this.apiUrl}/revenue`);
+    return await firstValueFrom(call);
+  }
+
+  public async getBoxesSold() : Promise<number> {
+    const call = this.http.get<number>(`${this.apiUrl}/boxes-sold`);
+    return await firstValueFrom(call);
+  }
+
+  public async getOrdersCount() : Promise<number> {
+    const call = this.http.get<number>(`${this.apiUrl}/orders-count`);
     return await firstValueFrom(call);
   }
 }

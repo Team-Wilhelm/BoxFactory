@@ -26,9 +26,13 @@ export class HomeComponent {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
   latestOrders: Order[] = [];
+  ordersCount: number = 0;
+  boxesSold: number = 0;
+  totalRevenue: number = 0;
 
   constructor(public orderService: OrderService) {
    this.loadOrders();
+   this.loadStatistics();
 
     this.chartOptions = {
       series: [
@@ -54,6 +58,16 @@ export class HomeComponent {
     try {
       this.latestOrders = await this.orderService.getLatest();
       console.log(this.latestOrders);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
+  }
+
+  async loadStatistics() {
+    try {
+      this.ordersCount = await this.orderService.getOrdersCount();
+      this.boxesSold = await this.orderService.getBoxesSold();
+      this.totalRevenue = await this.orderService.getTotalRevenue();
     } catch (error) {
       console.error('Error loading orders:', error);
     }
