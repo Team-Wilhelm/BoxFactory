@@ -7,5 +7,5 @@ public class Order
     public DateTime? UpdatedAt { get; set; }
     public Dictionary<Guid, int> Boxes { get; set; } = new();
     public Customer? Customer { get; set; }
-    public ShippingStatus? ShippingStatus { get; set; }
+    public ShippingStatus ShippingStatus { get; set; }
 }

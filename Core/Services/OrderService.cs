@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Infrastructure;
+﻿using Infrastructure;
 using Models;
 using Models.DTOs;
 using Models.Models;
@@ -9,12 +8,10 @@ namespace Core.Services;
 public class OrderService
 {
     private readonly OrderRepository _orderRepository;
-    private readonly IMapper _mapper;
 
-    public OrderService(OrderRepository orderRepository, IMapper mapper)
+    public OrderService(OrderRepository orderRepository)
     {
         _orderRepository = orderRepository;
-        _mapper = mapper;
     }
     
     public async Task<Order> Create(OrderCreateDto orderCreateDto)
@@ -49,6 +46,7 @@ public class OrderService
         try
         {
             return await _orderRepository.GetByStatus(status);
+            
         }
         catch (Exception e)
         {
@@ -57,10 +55,8 @@ public class OrderService
         }
     }
     
-    public async Task UpdateStatus(Guid id, ShippingStatus status)
+    public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
     {
-        if (ShippingStatus.Received != status) throw new Exception("Cannot update an order being prepared or shipped.");
-        
             try
             {
                 await _orderRepository.UpdateStatus(id, status);
