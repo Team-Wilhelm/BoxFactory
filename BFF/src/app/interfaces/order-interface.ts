@@ -1,11 +1,22 @@
 import {Box} from "./box-inteface";
-import {Customer} from "./customer-interface";
+import {CreateCustomerDto, Customer} from "./customer-interface";
 
 export interface Order {
-  id: string; // Guids are represented as strings in Typescript
-  status?: string; // string? is represented as Optional String in TypeScript
-  createdAt: Date; // DateTime in C# = Date in TypeScript
-  updatedAt?: Date; // Nullable DateTime translates to an optional Date in TypeScript
-  boxes?: Box[]; // Assuming Box is another interface we defined in TypeScript. List<T> in C# = T[] in TypeScript
-  customer?: Customer; // Assuming Customer is another interface we defined in TypeScript
+  id: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  boxes: Record<string, number>; // Dictionary<Guid, int> is represented as Record<string, number> in TypeScript
+  customer?: Customer; // Assuming Customer is an interface we defined in TypeScript
+  shippingStatus?: ShippingStatus; // Assuming ShippingStatus is either an interface or type alias we defined in TypeScript
+}
+
+export interface OrderCreateDto {
+  boxes: Record<string, number>;
+  customer?: CreateCustomerDto;
+}
+
+export enum ShippingStatus {
+  Received = 'Received',
+  Preparing = 'Preparing',
+  Shipped = 'Shipped'
 }

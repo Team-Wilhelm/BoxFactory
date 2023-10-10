@@ -2,29 +2,19 @@
   <thead>
   <tr>
     <th></th>
-    <th>Weight</th>
-    <th>Colour</th>
-    <th>Material</th>
-    <th>Dimensions</th>
-    <th>Price</th>
-    <th>Stock</th>
+    <th>Created at</th>
+    <th>Customer email</th>
+    <th>Num of boxes</th>
     <th></th>
   </tr>
   </thead>
   <tbody>
-    <ng-template ngFor let-box [ngForOf]="boxService.boxes">
+    <ng-template ngFor let-order [ngForOf]="orderService.orders">
       <tr>
-        <td> {{box.id}} </td>
-        <td class="text-right"> {{box.weight | number:'1.2'}} kg </td>
-        <td> {{box.colour}} </td>
-        <td> {{box.material}} </td>
-        <td>
-          Height: {{box.dimensions?.height}} <br/>
-          Width: {{box.dimensions?.width}} <br/>
-          Length: {{box.dimensions?.length}}
-        </td>
-        <td> {{box.price}} </td>
-        <td> {{box.stock}} </td>
+        <td> {{order.id}} </td>
+        <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
+        <td> {{order.customer?.email}} </td>
+        <td> {{order.shippingStatus}} </td>
         <td class="text-right">
           <div class="join">
             <button class="btn btn-ghost rounded-md join-item">
@@ -46,12 +36,8 @@
   <tfoot>
   <tr>
     <th></th>
-    <th>Weight</th>
-    <th>Colour</th>
-    <th>Material</th>
-    <th>Dimensions</th>
-    <th>Price</th>
-    <th>Stock</th>
+    <th>Created at</th>
+    <th>Num of boxes</th>
     <th></th>
   </tr>
   </tfoot>

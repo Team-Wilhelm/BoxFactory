@@ -10,8 +10,7 @@ export class BoxService {
   boxes: Box[] = [];
   private apiUrl = 'http://localhost:5133/box';
   constructor(private http: HttpClient) {
-    this.getlocal().then(r => console.log(this.boxes));
-    //this.get().then(r => console.log(this.boxes));
+    this.get().then(r => console.log(this.boxes));
   }
 
   async get() {
@@ -64,7 +63,7 @@ export class BoxService {
     return firstValueFrom(this.http.put<Box>(`${this.apiUrl}/${id}`, boxUpdateDto));
   }
 
-  public delete(id: string) {
-    return firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
+  public delete(id: string) : Observable<any> {
+    return this.http.delete(`${this.apiUrl}/box/${id}`);
   }
 }
