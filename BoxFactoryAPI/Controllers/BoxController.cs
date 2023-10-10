@@ -1,7 +1,8 @@
 using Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.DTOs;
+using Models.Models;
+using Models.Util;
 
 namespace BoxFactoryAPI.Controllers;
 
@@ -17,13 +18,10 @@ public class BoxController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Box>>> Get([FromQuery] string? searchTerm, [FromQuery] int currentPage, 
-        [FromQuery] int boxesPerPage, [FromQuery] string? sortBy, [FromQuery] bool? descending)
+    public async Task<ActionResult<IEnumerable<Box>>> Get([FromQuery] BoxParameters boxParameters)
     {
-        var sorting = new Sorting(sortBy, descending);
-        currentPage = currentPage < 1 ? 1 : currentPage;
-        boxesPerPage = boxesPerPage < 1 ? 10 : boxesPerPage;
-        return Ok(await _boxService.Get(searchTerm, currentPage, boxesPerPage, sorting));
+        var sorting = new Sorting(boxParameters.SortBy, boxParameters.Descending);
+        return Ok(await _boxService.Get(boxParameters, sorting));
     }
 
     [HttpGet("{id:guid}")]

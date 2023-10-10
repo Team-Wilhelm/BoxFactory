@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Models.Util;
 
-namespace Models;
+namespace Models.Models;
 
 public class Box
 {
@@ -12,12 +13,11 @@ public class Box
     
     public string? Colour { get; set; }
     public string? Material { get; set; }
-    
     public Dimensions? Dimensions { get; set; }
     public DateTime CreatedAt { get; set; }
     
     [Required]
-    [PositiveNumber]
+    [Range(0, int.MaxValue)]
     public int Stock { get; set; }
     
     [Required]

@@ -2,6 +2,7 @@
 using Dapper;
 using Models;
 using Models.DTOs;
+using Models.Models;
 using Npgsql;
 
 namespace Tests;

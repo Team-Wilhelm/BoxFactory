@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using Models.Util;
 
-namespace Models;
+namespace Models.Models;
 
 public class Dimensions
 {

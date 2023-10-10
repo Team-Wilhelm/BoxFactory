@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Models;
+using Models.Models;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
