@@ -1,10 +1,8 @@
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BoxService} from "../../services/box-service";
-import {BoxUpdateDto} from "../../interfaces/box-inteface";
 import {DimensionsDto} from "../../interfaces/dimension-interface";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {positiveNumberValidator} from "../../positiveNumberValidator";
-import {min} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({

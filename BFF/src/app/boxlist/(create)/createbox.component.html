@@ -22,16 +22,18 @@
           <label class="label">
             <span class="label-text">Colour:</span>
           </label>
-          <input type="text" placeholder="Enter colour" class="input input-bordered w-full"
-                 id="colour" name="colour" [formControl]="boxForm.controls.colour"/>
+          <select class="select select-bordered w-full" id="colour" name="colour" [formControl]="boxForm.controls.colour">
+            <option *ngFor="let colour of boxService.getColours()" [value]="colour">{{colour}}</option>
+          </select>
         </div>
 
         <div class="form-control w-full">
           <label class="label">
             <span class="label-text">Material:</span>
           </label>
-          <input type="text" placeholder="Enter material" class="input input-bordered w-full"
-                 id="material" name="material" [formControl]="boxForm.controls.material"/>
+          <select class="select select-bordered w-full" id="material" name="material" [formControl]="boxForm.controls.material">
+            <option *ngFor="let material of boxService.getMaterials()" [value]="material">{{material}}</option>
+          </select>
         </div>
 
         <div class="divider">Dimensions</div>
