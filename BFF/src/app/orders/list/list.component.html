@@ -29,6 +29,15 @@
         </td>
         <td> {{Object.keys(order.boxes).length}} </td>
         <td class="text-right">
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn m-1">Change shipping status</label>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Received)">{{ShippingStatus.Received}}</button></li>
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Preparing)">{{ShippingStatus.Preparing}}</button></li>
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Shipped)">{{ShippingStatus.Shipped}}</button></li>
+            </ul>
+          </div>
+
           <div class="join hidden">
             <button class="btn btn-ghost rounded-md join-item">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
