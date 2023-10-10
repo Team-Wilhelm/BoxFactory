@@ -1,0 +1,176 @@
+<dialog id="create_order" class="modal">
+  <div class="modal-box">
+    <div class="flex flex-col">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="create_order.close()">✕</button>
+
+      <div class="prose">
+        <h2>
+          Create new Order:
+        </h2>
+      </div>
+
+      <div class="tabs tabs-boxed">
+        <a class="tab" [class.tab-active]="activeTab === 'box-tab'" (click)="changeTab('box-tab')">Boxes</a>
+        <a class="tab" [class.tab-active]="activeTab === 'customer-tab'"
+           (click)="changeTab('customer-tab')">Customer</a>
+      </div>
+
+      <div id="box-tab" [class.hidden]="activeTab !== 'box-tab'">
+        <!-- This input collects IDs of created boxes -->
+        <div class="form-control w-full mb-3">
+          <label class="label">
+            <span class="label-text">Boxes IDs:</span>
+          </label>
+          <div class="join mb-1">
+            <select #boxId class="select select-bordered w-full max-w-xs join-item">
+              <option *ngFor="let box of boxes" [value]="box.id">{{ box.colour + ', ' + box.material + ', H: ' + box.dimensions?.height + ', L: ' + box.dimensions?.length + ', W: ' + box.dimensions?.width }}</option>
+            </select>
+            <input #boxAmount type="number" placeholder="Enter amount" class="input input-bordered join-item" required
+                   style="width: 100px"/>
+            <button class="btn btn-secondary join-item" (click)="addBox(boxId.value, boxAmount.value, $event)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                   class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Here we convert the Record<string, number> object into a [string, number][] array -->
+          <div *ngFor="let boxSel of addedBoxes | keyvalue" class="join mb-1">
+            <input type="text" class="input input-bordered w-full join-item" value="{{boxSel.key}}" disabled>
+            <input type="number" class="input input-bordered join-item" value="{{boxSel.value}}" disabled
+                   style="width: 100px">
+            <button class="btn btn-active join-item" (click)="removeBox(boxSel.key, $event)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+      <form (ngSubmit)="onCreateOrder()">
+
+        <div id="customer-tab" [class.hidden]="activeTab !== 'customer-tab'">
+          <div class="flex gap-3">
+
+            <!-- This input collects the first name of the customer -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">First Name:</span>
+              </label>
+              <input type="text" placeholder="Enter first name" class="input input-bordered w-full"
+                     [(ngModel)]="customer.firstName"
+                     id="firstName" name="firstName"/>
+            </div>
+
+            <!-- This input collects the last name of the customer -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">Last Name:</span>
+              </label>
+              <input type="text" placeholder="Enter last name" class="input input-bordered w-full"
+                     [(ngModel)]="customer.lastName"
+                     id="lastName" name="lastName"/>
+            </div>
+
+          </div>
+
+          <!-- This input collects the email of the customer -->
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Email:</span>
+            </label>
+            <input type="text" placeholder="Enter email" class="input input-bordered w-full"
+                   [(ngModel)]="customer.email"
+                   id="email" name="email"/>
+          </div>
+
+          <!-- This input collects the phone number of the customer -->
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Phone Number:</span>
+            </label>
+            <input type="text" placeholder="Enter phone number" class="input input-bordered w-full"
+                   [(ngModel)]="customer.phoneNumber"
+                   id="phoneNumber" name="phoneNumber"/>
+          </div>
+
+          <div class="divider">Address:</div>
+
+          <!-- This input collects the street name of the customer's address -->
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text">Street Name:</span>
+            </label>
+            <input type="text" placeholder="Enter street name" class="input input-bordered w-full"
+                   [(ngModel)]="address.streetName"
+                   id="streetName" name="streetName"/>
+          </div>
+          <div class="flex gap-3">
+
+            <!-- This input collects the house number of the customer's address -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">House Number:</span>
+              </label>
+              <input type="number" placeholder="Enter house number" class="input input-bordered w-full"
+                     [(ngModel)]="address.houseNumber"
+                     id="houseNumber" name="houseNumber" required/>
+            </div>
+
+            <!-- This input collects the house number addition of the customer's address -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">House Number Addition:</span>
+              </label>
+              <input type="text" placeholder="Enter house number addition" class="input input-bordered w-full"
+                     [(ngModel)]="address.houseNumberAddition"
+                     id="houseNumberAddition" name="houseNumberAddition"/>
+            </div>
+
+          </div>
+
+          <div class="flex gap-3">
+
+            <!-- This input collects the city of the customer's address -->
+            <div class="form-control w-full flex-3">
+              <label class="label">
+                <span class="label-text">City:</span>
+              </label>
+              <input type="text" placeholder="Enter city" class="input input-bordered w-full" [(ngModel)]="address.city"
+                     id="city" name="city"/>
+            </div>
+
+            <!-- This input collects the postal code of the customer's address -->
+            <div class="form-control flex-2">
+              <label class="label">
+                <span class="label-text">Postal Code:</span>
+              </label>
+              <input type="text" placeholder="Enter postal code" class="input input-bordered w-full"
+                     [(ngModel)]="address.postalCode"
+                     id="postalCode" name="postalCode"/>
+            </div>
+
+          </div>
+
+          <!-- This input collects the country of the customer's address -->
+          <div class="form-control w-full mb-3">
+            <label class="label">
+              <span class="label-text">Country:</span>
+            </label>
+            <input type="text" placeholder="Enter country" class="input input-bordered w-full"
+                   [(ngModel)]="address.country"
+                   id="country" name="country"/>
+          </div>
+
+        </div>
+
+        <button class="btn btn-primary" type="submit" onclick="create_order.close()">
+          Create Order
+        </button>
+      </form>
+    </div>
+  </div>
+</dialog>

@@ -3,6 +3,7 @@
   <tr>
     <th></th>
     <th>Created at</th>
+    <th>Customer email</th>
     <th>Num of boxes</th>
     <th></th>
   </tr>
@@ -12,7 +13,8 @@
       <tr>
         <td> {{order.id}} </td>
         <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
-        <td>{{order.boxes?.length}}</td>
+        <td> {{order.customer?.email}} </td>
+        <td> {{order.shippingStatus}} </td>
         <td class="text-right">
           <div class="join">
             <button class="btn btn-ghost rounded-md join-item">

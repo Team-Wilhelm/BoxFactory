@@ -10,7 +10,7 @@ export class BoxService {
   boxes: Box[] = [];
   private apiUrl = 'http://localhost:5133/box';
   constructor(private http: HttpClient) {
-    this.getlocal().then(r => console.log(this.boxes));
+    this.get().then(r => console.log(this.boxes));
   }
 
   async get() {
