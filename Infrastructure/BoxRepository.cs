@@ -25,72 +25,7 @@ public class BoxRepository
 
     public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
     {
-        //TODO: Resolve searching by multiple words to only include boxes that match all words
-        var searchQuery = "";
-        if (!string.IsNullOrWhiteSpace(boxParameters.SearchTerm))
-        {
-            var searchTerms = boxParameters.SearchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var searchCondition = new List<string>();
-            var parameters = new DynamicParameters(); // To avoid SQL injection
-            for (int i = 0; i < searchTerms.Length; i++)
-            {
-                var term = $"@term{i}";
-                searchCondition.Add($"(colour ILIKE {term} OR material ILIKE {term})");
-                parameters.Add(term, $"%{searchTerms[i]}%");
-            }
-
-            searchQuery = $"WHERE {string.Join(" AND ", searchCondition)}";
-        }
-
-        var filterQuery = "";
-        if (boxParameters.GetFilters().Count > 0)
-        {
-            foreach (var (key, value) in boxParameters.GetFilters())
-            {
-                switch (key)
-                {
-                    case FilterTypes.Weight:
-                    case FilterTypes.Price:
-                    case FilterTypes.Stock:
-                    case FilterTypes.Width:
-                    case FilterTypes.Length:
-                    case FilterTypes.Height:
-                        filterQuery +=
-                            $" AND {key.ToString().ToLower()} BETWEEN {value.Split('-')[0]} AND {value.Split('-')[1]}";
-                        break;
-                    case FilterTypes.Colour:
-                    case FilterTypes.Material:
-                        var values = value.Split(',');
-                        var validValues = new List<string>();
-                        foreach (var val in values)
-                        {
-                            if (key == FilterTypes.Colour && _colours.Contains(val))
-                            {
-                                validValues.Add(val);
-                            }
-                            else if (key == FilterTypes.Material && _materials.Contains(val))
-                            {
-                                validValues.Add(val);
-                            }
-                        }
-                        
-                        // We need to wrap the values in single quotes to make them valid SQL
-                        filterQuery += $" AND {key.ToString().ToLower()} IN ('{string.Join("','", validValues)}')";
-                        Console.WriteLine(filterQuery);
-                        break;
-                    default:
-                        throw new Exception("Invalid filter type");
-                }
-            }
-            
-            // If the search query is empty, we need to add the WHERE keyword
-            // Otherwise, we need to remove the first AND keyword, since each filter is preceded by an AND
-            filterQuery = string.IsNullOrWhiteSpace(searchQuery) ? $"WHERE {filterQuery.Substring(5)}" : filterQuery[5..];
-        }
-        
-        searchQuery += filterQuery;
-        Console.WriteLine(searchQuery);
-
+        var searchQuery = GetSearchAndFilterQuery(boxParameters);
         var boxSql = @$"SELECT
                  box_id AS {nameof(Box.Id)},
                  weight AS {nameof(Box.Weight)},
@@ -262,5 +197,77 @@ public class BoxRepository
                     FROM {_databaseSchema}.dimensions
                     WHERE dimensions_id = @Id";
         return _dbConnection.QuerySingle<Dimensions>(dimensionsSql, new { Id = dimensionsId });
+    }
+
+    /// <summary>
+    /// A util method to create a WHERE clause for the SQL query, based on the search term and filters.
+    /// </summary>
+    /// <param name="boxParameters"></param>
+    /// <returns>A string WHERE clause for the SQL query, based on the search term and filters.</returns>
+    /// <exception cref="Exception"></exception>
+    private string GetSearchAndFilterQuery(BoxParameters boxParameters)
+    {
+        // If the search term is not null or whitespace, we need to add a WHERE clause to the SQL query, otherwise it's omitted and will return all boxes
+        var searchQuery = "";
+        if (!string.IsNullOrWhiteSpace(boxParameters.SearchTerm))
+        {
+            var searchTerms = boxParameters.SearchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var searchCondition = new List<string>();
+            var parameters = new DynamicParameters(); // To avoid SQL injection
+            for (int i = 0; i < searchTerms.Length; i++)
+            {
+                var term = $"@term{i}";
+                searchCondition.Add($"(colour ILIKE {term} OR material ILIKE {term})");
+                parameters.Add(term, $"%{searchTerms[i]}%");
+            }
+            
+            // Join the search terms with AND, which makes it possible to search for multiple terms
+            // However, this means that we can search for 'red plastic' but not 'red blue', since the box can't be both red and blue
+            searchQuery = $"WHERE {string.Join(" AND ", searchCondition)}"; 
+        }
+        
+        var filterQuery = "";
+        if (boxParameters.GetFilters().Count > 0)  // If there are any filters, we need to add them to the SQL query
+        {
+            foreach (var (key, value) in boxParameters.GetFilters())
+            {
+                switch (key)
+                {
+                    case FilterTypes.Weight: // Numeric values should be passed in 'x-y' format, therefore we need to split the string and add a BETWEEN clause 
+                    case FilterTypes.Price:
+                    case FilterTypes.Stock:
+                    case FilterTypes.Width:
+                    case FilterTypes.Length:
+                    case FilterTypes.Height:
+                        filterQuery +=
+                            $" AND {key.ToString().ToLower()} BETWEEN {value.Split('-')[0]} AND {value.Split('-')[1]}";
+                        break;
+                    case FilterTypes.Colour: // Colour and material are passed in 'x,y,z' format, therefore we need to split the string and add an IN clause
+                    case FilterTypes.Material:
+                        var values = value.Split(','); // Split the string into an array of values
+                        var validValues = new List<string>(); // We need to make sure that the values are valid
+                        foreach (var val in values)
+                        {
+                            if ((key == FilterTypes.Colour && _colours.Contains(val)) ||
+                                (key == FilterTypes.Material && _materials.Contains(val)))
+                                validValues.Add(val);
+                        }
+                        
+                        // We need to wrap the values in single quotes to make them valid SQL strings
+                        filterQuery += $" AND {key.ToString().ToLower()} IN ('{string.Join("','", validValues)}')";
+                        Console.WriteLine(filterQuery);
+                        break;
+                    default:
+                        throw new Exception("Invalid filter type");
+                }
+            }
+            
+            // If the search query is empty, we need to add the WHERE keyword
+            // Otherwise, we need to remove the first AND keyword, since each filter is preceded by an AND
+            filterQuery = string.IsNullOrWhiteSpace(searchQuery) ? $"WHERE {filterQuery.Substring(5)}" : filterQuery[5..];
+        }
+        
+        searchQuery += filterQuery; // Append the filter query to the search query, to create one WHERE clause
+        return searchQuery;
     }
 }
