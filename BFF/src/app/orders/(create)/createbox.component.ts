@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {BoxService} from "../../services/box-service";
 import {BoxCreateDto} from "../../interfaces/box-inteface";
-import {Dimensions} from "../../interfaces/dimension-interface";
+import {DimensionsDto} from "../../interfaces/dimension-interface";
 
 @Component({
   selector: 'create-box',
@@ -9,11 +9,11 @@ import {Dimensions} from "../../interfaces/dimension-interface";
 })
 export class CreateboxComponent {
   box: BoxCreateDto;
-  dimensions: Dimensions;
+  dimensions: DimensionsDto;
 
   constructor(public boxService: BoxService) {
     this.dimensions = {height: 0, width: 0, length: 0};
-    this.box = {weight: 0, colour: "", material: "", dimensions: this.dimensions, price: 0, stock: 0};
+    this.box = {weight: 0, colour: "", material: "", dimensionsDto: this.dimensions, price: 0, stock: 0};
   }
 
   async onCreateBox() {
