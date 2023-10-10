@@ -19,7 +19,8 @@ public class OrderService
         if (orderCreateDto.Boxes.Count == 0) throw new Exception("No boxes in order.");
         try
         {
-            return await _orderRepository.Create(orderCreateDto);
+            var order = await _orderRepository.Create(orderCreateDto);
+            return order;
         }
         catch (Exception e)
         {
@@ -53,6 +54,11 @@ public class OrderService
             Console.WriteLine(e.Message, e.InnerException);
             throw new Exception("Something went wrong while fetching these orders.");
         }
+    }
+    
+    public async Task<IEnumerable<Order>> GetLatest()
+    {
+        return await _orderRepository.GetLatest();
     }
     
     public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)

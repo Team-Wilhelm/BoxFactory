@@ -35,6 +35,12 @@ public class OrderController: ControllerBase
         return Ok(await _orderService.GetByStatus(status));
     }
     
+    [HttpGet("latest")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetRecent()
+    {
+        return Ok(await _orderService.GetLatest());
+    }
+    
     [HttpPatch("{id:guid}")]
     public async Task<ActionResult> UpdateStatus(Guid id, [FromBody]ShippingStatusUpdateDto status)
     {
@@ -48,5 +54,4 @@ public class OrderController: ControllerBase
         await _orderService.Delete(id);
         return Ok();
     }
-    
 }

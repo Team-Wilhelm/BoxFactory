@@ -8,4 +8,6 @@ public class Order
     public Dictionary<Guid, int> Boxes { get; set; } = new();
     public Customer? Customer { get; set; }
     public ShippingStatus ShippingStatus { get; set; }
+    public decimal TotalPrice { get; set; }
+    public int TotalBoxes { get; set; }
 }
