@@ -15,7 +15,18 @@
         <td> {{order.id}} </td>
         <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
         <td> {{order.customer?.email}} </td>
-        <td> {{order.shippingStatus}} </td>
+        <td class="flex gap-3">
+          <div class="avatar">
+            <div class="w-24 shadow-lg rounded-full ring ring-0 ring-offset-base-100 ring-offset-2">
+              <img *ngIf="order.shippingStatus === 'Received'" width="70" height="70" src="/assets/img/Received.png"/>
+              <img *ngIf="order.shippingStatus === 'Preparing'" width="70" height="70" src="/assets/img/Preparing.png"/>
+              <img *ngIf="order.shippingStatus === 'Shipped'" width="70" height="70" src="/assets/img/Shipped.png"/>
+            </div>
+          </div>
+          <h3 class="flex justify-center items-center">
+            {{order.shippingStatus}}
+          </h3>
+        </td>
         <td> {{Object.keys(order.boxes).length}} </td>
         <td class="text-right">
           <div class="join hidden">
