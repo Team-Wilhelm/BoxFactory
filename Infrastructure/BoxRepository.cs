@@ -25,7 +25,9 @@ public class BoxRepository
 
     public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
     {
-        var searchQuery = GetSearchAndFilterQuery(boxParameters);
+        var searchQuery = GetSearchAndFilterQuery(boxParameters).Keys.First();
+        var parameters = GetSearchAndFilterQuery(boxParameters).Values.First();
+        
         var boxSql = @$"SELECT
                  box_id AS {nameof(Box.Id)},
                  weight AS {nameof(Box.Weight)},
@@ -39,9 +41,9 @@ public class BoxRepository
               {sorting.Query}
               LIMIT @BoxesPerPage 
               OFFSET @Offset";
-        object queryParams = new
-            { boxParameters.BoxesPerPage, Offset = (boxParameters.CurrentPage - 1) * boxParameters.BoxesPerPage };
-        var boxes = (await _dbConnection.QueryAsync<Box>(boxSql, queryParams)).ToList();
+        parameters.Add("BoxesPerPage", boxParameters.BoxesPerPage);
+        parameters.Add("Offset", (boxParameters.CurrentPage - 1) * boxParameters.BoxesPerPage);
+        var boxes = (await _dbConnection.QueryAsync<Box>(boxSql, parameters)).ToList();
         boxes.ToList().ForEach(box => box.Dimensions = GetDimensionsByBoxId(box.Id));
         return boxes;
     }
@@ -203,17 +205,18 @@ public class BoxRepository
     /// A util method to create a WHERE clause for the SQL query, based on the search term and filters.
     /// </summary>
     /// <param name="boxParameters"></param>
-    /// <returns>A string WHERE clause for the SQL query, based on the search term and filters.</returns>
+    /// <returns>A dictionary with a single entry, where key is a WHERE SQL clause, based on the search term and filters and value is the Dynamic Parameters pertaining to this query.</returns>
     /// <exception cref="Exception"></exception>
-    private string GetSearchAndFilterQuery(BoxParameters boxParameters)
+    private Dictionary<string, DynamicParameters> GetSearchAndFilterQuery(BoxParameters boxParameters)
     {
+        var parameters = new DynamicParameters(); // To avoid SQL injection
         // If the search term is not null or whitespace, we need to add a WHERE clause to the SQL query, otherwise it's omitted and will return all boxes
         var searchQuery = "";
         if (!string.IsNullOrWhiteSpace(boxParameters.SearchTerm))
         {
             var searchTerms = boxParameters.SearchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var searchCondition = new List<string>();
-            var parameters = new DynamicParameters(); // To avoid SQL injection
+           
             for (int i = 0; i < searchTerms.Length; i++)
             {
                 var term = $"@term{i}";
@@ -241,6 +244,8 @@ public class BoxRepository
                     case FilterTypes.Height:
                         filterQuery +=
                             $" AND {key.ToString().ToLower()} BETWEEN {value.Split('-')[0]} AND {value.Split('-')[1]}";
+                        parameters.Add(value.Split('-')[0]);
+                        parameters.Add(value.Split('-')[1]);
                         break;
                     case FilterTypes.Colour: // Colour and material are passed in 'x,y,z' format, therefore we need to split the string and add an IN clause
                     case FilterTypes.Material:
@@ -254,7 +259,9 @@ public class BoxRepository
                         }
                         
                         // We need to wrap the values in single quotes to make them valid SQL strings
-                        filterQuery += $" AND {key.ToString().ToLower()} IN ('{string.Join("','", validValues)}')";
+                        var filterValues = string.Join("','", validValues);
+                        filterQuery += $" AND {key.ToString().ToLower()} IN ('{filterValues}')";
+                        parameters.Add(filterValues);
                         Console.WriteLine(filterQuery);
                         break;
                     default:
@@ -264,10 +271,10 @@ public class BoxRepository
             
             // If the search query is empty, we need to add the WHERE keyword
             // Otherwise, we need to remove the first AND keyword, since each filter is preceded by an AND
-            filterQuery = string.IsNullOrWhiteSpace(searchQuery) ? $"WHERE {filterQuery.Substring(5)}" : filterQuery[5..];
+            filterQuery = string.IsNullOrWhiteSpace(searchQuery) ? $"WHERE {filterQuery[5..]}" : filterQuery;
         }
         
         searchQuery += filterQuery; // Append the filter query to the search query, to create one WHERE clause
-        return searchQuery;
+        return new Dictionary<string, DynamicParameters> { { searchQuery, parameters } } ;
     }
 }
