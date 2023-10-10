@@ -61,8 +61,6 @@ export class CreateorderComponent {
   }
 
   async onCreateOrder() {
-    console.log(this.order);
-    debugger;
     await this.orderService.create(this.order);
   }
 }

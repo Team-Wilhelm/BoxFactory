@@ -14,45 +14,12 @@ export class BoxService {
   }
 
   async get() {
-    const call = this.http.get<Box[]>(`${this.apiUrl}`);
+    const call = this.http.get<Box[]>(`${this.apiUrl}?boxesPerPage=100`);
     this.boxes = await firstValueFrom<Box[]>(call);
   }
 
-  async getlocal(){
-    this.boxes = [
-      {
-        id: "3e0c4000-28e1-46c4-b2e6-1c4bad9128b1",
-        weight: 5.3,
-        colour: "blue",
-        material: "wood",
-        dimensions: { width: 2, length: 3, height: 1 },
-        createdAt: new Date(2022, 2, 1),
-        stock: 20,
-        price: 49.99
-      },
-      {
-        id: "1d678c2e-990f-4129-959e-8cc1ecf8691d",
-        weight: 7.2,
-        colour: "red",
-        material: "plastic",
-        createdAt: new Date(2022, 2, 5),
-        stock: 15,
-        price: 29.99
-      },
-      {
-        id: "15afb791-f4fd-4b5c-beaf-5367fcbdfb55",
-        weight: 3.7,
-        colour: "green",
-        dimensions: { width: 1, length: 2, height: 1 },
-        createdAt: new Date(2022, 3, 1),
-        stock: 30,
-        price: 19.99
-      }
-    ];
-  }
-
-  public getbyId(id: string): Observable<Box> {
-    return this.http.get<Box>(`${this.apiUrl}/${id}`);
+  public getbyId(id: string) {
+    return firstValueFrom(this.http.get<Box>(`${this.apiUrl}/${id}`));
   }
 
   public create(boxCreateDto: BoxCreateDto) {
@@ -64,6 +31,14 @@ export class BoxService {
   }
 
   public delete(id: string) : Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/box/${id}`);
+  }
+
+  public getColours(): string[] {
+    return ['red', 'blue', 'green', 'yellow', 'black', 'white', 'brown', 'grey', 'orange', 'purple', 'pink', 'gold', 'silver', 'bronze', 'copper'];
+  }
+
+  public getMaterials(): string[] {
+    return ['cardboard', 'plastic', 'wood', 'metal'];
   }
 }
