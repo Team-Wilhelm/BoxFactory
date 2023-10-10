@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {BoxService} from "../../services/box-service";
-import {Dimensions, DimensionsDto} from "../../interfaces/dimension-interface";
 import {OrderCreateDto} from "../../interfaces/order-interface";
 import {Box} from "../../interfaces/box-inteface";
 import {CreateCustomerDto} from "../../interfaces/customer-interface";

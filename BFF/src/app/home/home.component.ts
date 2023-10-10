@@ -37,6 +37,7 @@ export class HomeComponent {
     this.loadStatistics();
     this.fetchDataForChart().then(data => this.data = data);
 
+    // TODO: Chart takes forever to load, fix this
     this.chartOptions = {
       series: [
         {
