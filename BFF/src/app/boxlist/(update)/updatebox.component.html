@@ -1,12 +1,13 @@
-<dialog id="create_box" class="modal">
-  <div class="modal-box">
-    <form method="dialog" (ngSubmit)="onCreateBox($event)" [formGroup]="boxForm">
+<div>
+  {{ boxId }}
+  <div>
+    <form method="dialog" (ngSubmit)="onUpdateBox($event)" [formGroup]="boxForm">
       <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="create_box.close()">✕</button>
 
       <div class="flex flex-col">
         <div class="prose">
           <h2>
-            Create new Box:
+            Update Box:
           </h2>
         </div>
 
@@ -86,4 +87,4 @@
       </div>
     </form>
   </div>
-</dialog>
+</div>

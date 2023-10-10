@@ -51,8 +51,8 @@ export class BoxService {
     ];
   }
 
-  public getbyId(id: string): Observable<Box> {
-    return this.http.get<Box>(`${this.apiUrl}/${id}`);
+  public getbyId(id: string) {
+    return firstValueFrom(this.http.get<Box>(`${this.apiUrl}/${id}`));
   }
 
   public create(boxCreateDto: BoxCreateDto) {

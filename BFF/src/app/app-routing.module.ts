@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'boxlist', component: BoxListComponent },
   { path: 'orders', component: OrdersComponent },
-  //{ path: 'boxlist/update', component: UpdateboxComponent }
+  { path: 'boxlist/update/:boxId', component: UpdateboxComponent }
 ];
 
 @NgModule({
