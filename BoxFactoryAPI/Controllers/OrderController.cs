@@ -28,14 +28,14 @@ public class OrderController: ControllerBase
         return Ok(await _orderService.Get());
     }
     
-    [HttpGet("status")]
-    public async Task<ActionResult<IEnumerable<Order>>> GetByStatus([FromQuery]string status)
+    [HttpGet("{status}")]
+    public async Task<ActionResult<IEnumerable<Order>>> GetByStatus(ShippingStatus status)
     {
         return Ok(await _orderService.GetByStatus(status));
     }
     
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateStatus(Guid id, string status)
+    [HttpPatch("{id:guid}")]
+    public async Task<ActionResult> UpdateStatus(Guid id, [FromBody]ShippingStatusUpdateDto status)
     {
         await _orderService.UpdateStatus(id, status);
         return Ok();

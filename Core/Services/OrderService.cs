@@ -40,9 +40,8 @@ public class OrderService
         }
     }
 
-    public async Task<IEnumerable<Order>> GetByStatus(string status)
+    public async Task<IEnumerable<Order>> GetByStatus(ShippingStatus status)
     {
-        //TODO check that status is a valid enum value
         try
         {
             return await _orderRepository.GetByStatus(status);
@@ -55,9 +54,8 @@ public class OrderService
         }
     }
     
-    public async Task UpdateStatus(Guid id, string status)
+    public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
     {
-        //TODO check that status is a valid enum value
             try
             {
                 await _orderRepository.UpdateStatus(id, status);

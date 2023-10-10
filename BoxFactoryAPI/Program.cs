@@ -1,5 +1,6 @@
 using System.Data;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using BoxFactoryAPI.Exceptions;
 using Core.Mapping;
 using Core.Services;
@@ -21,7 +22,8 @@ builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<BoxService>();
 builder.Services.AddControllers(options => options.Filters.Add<ExceptionFilter>());
 builder.Services.AddScoped<OrderService>();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => 
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();

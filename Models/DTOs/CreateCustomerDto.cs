@@ -1,10 +1,25 @@
-﻿namespace Models.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Models.DTOs;
 
 public class CreateCustomerDto
 {
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string? Email { get; set; }
-    public CreateAddressDto? Address { get; set; }
-    public string? PhoneNumber { get; set; }
+    [Required]
+    [MinLength(1)]
+    public string FirstName { get; set; }
+    
+    [Required]
+    [MinLength(1)]
+    public string LastName { get; set; }
+    
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+    
+    [Required]
+    public CreateAddressDto Address { get; set; }
+    
+    [Required]
+    [MinLength(8)]
+    public string PhoneNumber { get; set; }
 }
