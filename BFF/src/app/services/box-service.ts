@@ -13,8 +13,8 @@ export class BoxService {
     this.get().then(r => console.log(this.boxes));
   }
 
-  async get() {
-    const call = this.http.get<Box[]>(`${this.apiUrl}?boxesPerPage=100`);
+  async get(searchTerm?: string) {
+    const call = this.http.get<Box[]>(`${this.apiUrl}?boxesPerPage=100&searchTerm=${searchTerm ?? ''}`);
     this.boxes = await firstValueFrom<Box[]>(call);
   }
 

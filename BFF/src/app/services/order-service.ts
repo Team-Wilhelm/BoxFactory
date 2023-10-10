@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom, Observable} from 'rxjs';
-import {BoxCreateDto, BoxUpdateDto} from "../interfaces/box-inteface";
-import {Order, OrderCreateDto, ShippingStatus} from "../interfaces/order-interface";
+import {Order, OrderCreateDto, ShippingStatus, ShippingStatusDto} from "../interfaces/order-interface";
 
 @Injectable({
   providedIn: 'root'
@@ -35,15 +34,11 @@ export class OrderService {
     return order;
   }
 
-  public async update(id: string, boxUpdateDto: BoxUpdateDto) {
-    const order = await firstValueFrom(this.http.put<Order>(`${this.apiUrl}/${id}`, boxUpdateDto));
-    order.createdAt = new Date(order.createdAt);
-    order.updatedAt = new Date(order.updatedAt? order.updatedAt : order.createdAt);
-    return order;
+  public updateStatus(id: string, status: ShippingStatusDto) {
+    return firstValueFrom(this.http.patch<Order>(`${this.apiUrl}/${id}`, status));
   }
-
-  public delete(id: string) : Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  public delete(id: string) {
+    return firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
   }
 
   public async getLatest() : Promise<Order[]> {

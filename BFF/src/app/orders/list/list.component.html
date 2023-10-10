@@ -15,9 +15,29 @@
         <td> {{order.id}} </td>
         <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
         <td> {{order.customer?.email}} </td>
-        <td> {{order.shippingStatus}} </td>
+        <td class="flex gap-3">
+          <div class="avatar">
+            <div class="w-24 shadow-lg rounded-full ring ring-0 ring-offset-base-100 ring-offset-2">
+              <img *ngIf="order.shippingStatus === 'Received'" width="70" height="70" src="/assets/img/Received.png"/>
+              <img *ngIf="order.shippingStatus === 'Preparing'" width="70" height="70" src="/assets/img/Preparing.png"/>
+              <img *ngIf="order.shippingStatus === 'Shipped'" width="70" height="70" src="/assets/img/Shipped.png"/>
+            </div>
+          </div>
+          <h3 class="flex justify-center items-center">
+            {{order.shippingStatus}}
+          </h3>
+        </td>
         <td> {{Object.keys(order.boxes).length}} </td>
         <td class="text-right">
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn m-1">Change shipping status</label>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Received)">{{ShippingStatus.Received}}</button></li>
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Preparing)">{{ShippingStatus.Preparing}}</button></li>
+              <li><button (click)="changeStatus(order.id, ShippingStatus.Shipped)">{{ShippingStatus.Shipped}}</button></li>
+            </ul>
+          </div>
+
           <div class="join hidden">
             <button class="btn btn-ghost rounded-md join-item">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
