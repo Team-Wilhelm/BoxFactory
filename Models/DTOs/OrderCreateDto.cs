@@ -10,5 +10,5 @@ public class OrderCreateDto
     public Dictionary<Guid, int> Boxes { get; set; } = new();
     
     [Required]
-    public CreateCustomerDto Customer { get; set; }
+    public CreateCustomerDto Customer { get; set; } = null!;
 }
