@@ -63,7 +63,7 @@ export class BoxService {
     return firstValueFrom(this.http.put<Box>(`${this.apiUrl}/${id}`, boxUpdateDto));
   }
 
-  public delete(id: string) : Observable<any> {
-    return this.http.delete(`${this.apiUrl}/box/${id}`);
+  public delete(id: string) {
+    return firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
   }
 }
