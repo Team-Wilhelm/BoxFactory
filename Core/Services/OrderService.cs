@@ -13,7 +13,7 @@ public class OrderService
     {
         _orderRepository = orderRepository;
     }
-    
+
     public async Task<Order> Create(OrderCreateDto orderCreateDto)
     {
         if (orderCreateDto.Boxes.Count == 0) throw new Exception("No boxes in order.");
@@ -28,7 +28,7 @@ public class OrderService
             throw new Exception("Something went wrong while creating order.");
         }
     }
-    
+
     public async Task<IEnumerable<Order>> Get()
     {
         try
@@ -47,7 +47,6 @@ public class OrderService
         try
         {
             return await _orderRepository.GetByStatus(status);
-            
         }
         catch (Exception e)
         {
@@ -55,25 +54,40 @@ public class OrderService
             throw new Exception("Something went wrong while fetching these orders.");
         }
     }
-    
+
     public async Task<IEnumerable<Order>> GetLatest()
     {
         return await _orderRepository.GetLatest();
     }
-    
-    public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
+
+    public async Task<int> GetTotalOrders()
     {
-            try
-            {
-                await _orderRepository.UpdateStatus(id, status);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message, e.InnerException);
-                throw new Exception("Something went wrong while updating order status.");
-            }
+        return await _orderRepository.GetTotalOrders();
     }
     
+    public async Task<decimal> GetTotalRevenue()
+    {
+        return await _orderRepository.GetTotalRevenue();
+    }
+    
+    public async Task<int> GetTotalBoxesSold()
+    {
+        return await _orderRepository.GetTotalBoxesSold();
+    }
+
+    public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
+    {
+        try
+        {
+            await _orderRepository.UpdateStatus(id, status);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message, e.InnerException);
+            throw new Exception("Something went wrong while updating order status.");
+        }
+    }
+
     public async Task Delete(Guid id)
     {
         try

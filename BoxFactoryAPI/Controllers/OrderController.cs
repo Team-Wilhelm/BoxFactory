@@ -41,6 +41,24 @@ public class OrderController: ControllerBase
         return Ok(await _orderService.GetLatest());
     }
     
+    [HttpGet("orders-count")]
+    public async Task<ActionResult<int>> GetTotalOrders()
+    {
+        return Ok(await _orderService.GetTotalOrders());
+    }
+    
+    [HttpGet("revenue")]
+    public async Task<ActionResult<decimal>> GetTotalRevenue()
+    {
+        return Ok(await _orderService.GetTotalRevenue());
+    }
+    
+    [HttpGet("boxes-sold")]
+    public async Task<ActionResult<int>> GetTotalBoxesSold()
+    {
+        return Ok(await _orderService.GetTotalBoxesSold());
+    }
+    
     [HttpPatch("{id:guid}")]
     public async Task<ActionResult> UpdateStatus(Guid id, [FromBody]ShippingStatusUpdateDto status)
     {

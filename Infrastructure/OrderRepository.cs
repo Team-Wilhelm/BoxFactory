@@ -129,6 +129,30 @@ public class OrderRepository
         var totalBoxes = await _dbConnection.ExecuteScalarAsync<int>(sql, new { Id = id });
         return totalBoxes;
     }
+    
+    // Get the number of all orders in the database
+    public async Task<int> GetTotalOrders()
+    {
+        var sql = $@"SELECT COUNT(*) FROM {_databaseSchema}.orders";
+        var totalOrders = await _dbConnection.ExecuteScalarAsync<int>(sql);
+        return totalOrders;
+    }
+    
+    // Get the total profit of all orders
+    public async Task<decimal> GetTotalRevenue()
+    {
+        var sql = $@"SELECT SUM(price) FROM {_databaseSchema}.boxes b INNER JOIN {_databaseSchema}.box_order_link bol ON b.box_id = bol.box_id";
+        var totalProfit = await _dbConnection.ExecuteScalarAsync<decimal>(sql);
+        return totalProfit;
+    }
+    
+    // Get the total amount of boxes sold
+    public async Task<int> GetTotalBoxesSold()
+    {
+        var sql = $@"SELECT SUM(quantity) FROM {_databaseSchema}.box_order_link";
+        var totalBoxesSold = await _dbConnection.ExecuteScalarAsync<int>(sql);
+        return totalBoxesSold;
+    }
 
     // Update shipping status
     public async Task UpdateStatus(Guid id, ShippingStatusUpdateDto status)
