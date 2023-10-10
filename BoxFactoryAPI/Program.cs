@@ -10,7 +10,7 @@ using Npgsql;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddSingleton<IDbConnection>(container =>
+builder.Services.AddScoped<IDbConnection>(container =>
 {
     var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("box_conn"));
     connection.Open();

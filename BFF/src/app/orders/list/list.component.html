@@ -4,6 +4,7 @@
     <th></th>
     <th>Created at</th>
     <th>Customer email</th>
+    <th>Shipping status</th>
     <th>Num of boxes</th>
     <th></th>
   </tr>
@@ -15,8 +16,9 @@
         <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
         <td> {{order.customer?.email}} </td>
         <td> {{order.shippingStatus}} </td>
+        <td> {{Object.keys(order.boxes).length}} </td>
         <td class="text-right">
-          <div class="join">
+          <div class="join hidden">
             <button class="btn btn-ghost rounded-md join-item">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
@@ -37,6 +39,8 @@
   <tr>
     <th></th>
     <th>Created at</th>
+    <th>Customer email</th>
+    <th>Shipping status</th>
     <th>Num of boxes</th>
     <th></th>
   </tr>
