@@ -1,7 +1,14 @@
-﻿namespace Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+namespace Models.DTOs;
 
 public class OrderCreateDto
 {
+    [Required]
     public Dictionary<Guid, int> Boxes { get; set; } = new();
-    public CreateCustomerDto? Customer { get; set; }
+    
+    [Required]
+    public CreateCustomerDto Customer { get; set; }
 }
