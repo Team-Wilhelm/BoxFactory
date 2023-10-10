@@ -26,7 +26,6 @@ public class BoxRepository
     public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
     {
         //TODO: Resolve searching by multiple words to only include boxes that match all words
-
         var searchQuery = "";
         if (!string.IsNullOrWhiteSpace(boxParameters.SearchTerm))
         {
@@ -42,6 +41,55 @@ public class BoxRepository
 
             searchQuery = $"WHERE {string.Join(" AND ", searchCondition)}";
         }
+
+        var filterQuery = "";
+        if (boxParameters.GetFilters().Count > 0)
+        {
+            foreach (var (key, value) in boxParameters.GetFilters())
+            {
+                switch (key)
+                {
+                    case FilterTypes.Weight:
+                    case FilterTypes.Price:
+                    case FilterTypes.Stock:
+                    case FilterTypes.Width:
+                    case FilterTypes.Length:
+                    case FilterTypes.Height:
+                        filterQuery +=
+                            $" AND {key.ToString().ToLower()} BETWEEN {value.Split('-')[0]} AND {value.Split('-')[1]}";
+                        break;
+                    case FilterTypes.Colour:
+                    case FilterTypes.Material:
+                        var values = value.Split(',');
+                        var validValues = new List<string>();
+                        foreach (var val in values)
+                        {
+                            if (key == FilterTypes.Colour && _colours.Contains(val))
+                            {
+                                validValues.Add(val);
+                            }
+                            else if (key == FilterTypes.Material && _materials.Contains(val))
+                            {
+                                validValues.Add(val);
+                            }
+                        }
+                        
+                        // We need to wrap the values in single quotes to make them valid SQL
+                        filterQuery += $" AND {key.ToString().ToLower()} IN ('{string.Join("','", validValues)}')";
+                        Console.WriteLine(filterQuery);
+                        break;
+                    default:
+                        throw new Exception("Invalid filter type");
+                }
+            }
+            
+            // If the search query is empty, we need to add the WHERE keyword
+            // Otherwise, we need to remove the first AND keyword, since each filter is preceded by an AND
+            filterQuery = string.IsNullOrWhiteSpace(searchQuery) ? $"WHERE {filterQuery.Substring(5)}" : filterQuery[5..];
+        }
+        
+        searchQuery += filterQuery;
+        Console.WriteLine(searchQuery);
 
         var boxSql = @$"SELECT
                  box_id AS {nameof(Box.Id)},

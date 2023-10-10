@@ -7,5 +7,19 @@ public class BoxParameters
     public int BoxesPerPage { get; set; } = 10;
     public string? SortBy { get; set; }
     public bool? Descending { get; set; }
+    public string? Filters { get; set; }
 
+    public Dictionary<FilterTypes, string> GetFilters()
+    {
+        var filters = new Dictionary<FilterTypes, string>();
+        if (Filters == null) return filters;
+        var filterStrings = Filters.Split(';');
+        foreach (var filterString in filterStrings)
+        {
+            var filter = filterString.Split(':');
+            filters.Add(Enum.Parse<FilterTypes>(filter[0]), filter[1]);
+        }
+
+        return filters;
+    }
 }
