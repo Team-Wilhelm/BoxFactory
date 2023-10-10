@@ -8,6 +8,8 @@ export interface Order {
   boxes: Record<string, number>; // Dictionary<Guid, int> is represented as Record<string, number> in TypeScript
   customer?: Customer; // Assuming Customer is an interface we defined in TypeScript
   shippingStatus?: ShippingStatus; // Assuming ShippingStatus is either an interface or type alias we defined in TypeScript
+  totalPrice?: number;
+  totalBoxes?: number;
 }
 
 export interface OrderCreateDto {

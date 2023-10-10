@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 
 import {
   ChartComponent,
@@ -7,6 +7,8 @@ import {
   ApexXAxis,
   ApexTitleSubtitle
 } from "ng-apexcharts";
+import {OrderService} from "../services/order-service";
+import {Order} from "../interfaces/order-interface";
 
 
 export type ChartOptions = {
@@ -23,8 +25,11 @@ export type ChartOptions = {
 export class HomeComponent {
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
+  latestOrders: Order[] = [];
 
-  constructor() {
+  constructor(public orderService: OrderService) {
+   this.loadOrders();
+
     this.chartOptions = {
       series: [
         {
@@ -43,5 +48,14 @@ export class HomeComponent {
         categories: ["Jan", "Feb",  "Mar",  "Apr",  "May",  "Jun",  "Jul",  "Aug", "Sep"]
       }
     };
+  }
+
+  async loadOrders() {
+    try {
+      this.latestOrders = await this.orderService.getLatest();
+      console.log(this.latestOrders);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
   }
 }

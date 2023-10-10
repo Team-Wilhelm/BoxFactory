@@ -17,7 +17,6 @@ export class OrderService {
   async get() {
     const call = this.http.get<Order[]>(`${this.apiUrl}`);
     this.orders = await firstValueFrom<Order[]>(call);
-    console.log(this.orders);
   }
 
   async getlocal(){
@@ -72,5 +71,10 @@ export class OrderService {
 
   public delete(id: string) : Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  public async getLatest() : Promise<Order[]> {
+    const call = this.http.get<Order[]>(`${this.apiUrl}/Latest`);
+    return await firstValueFrom(call);
   }
 }
