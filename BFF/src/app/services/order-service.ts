@@ -17,56 +17,29 @@ export class OrderService {
   async get() {
     const call = this.http.get<Order[]>(`${this.apiUrl}`);
     this.orders = await firstValueFrom<Order[]>(call);
+    this.orders.map(o => o.createdAt = new Date(o.createdAt));
+    this.orders.map(o => o.updatedAt = new Date(o.updatedAt? o.updatedAt : o.createdAt));
   }
 
-  async getlocal(){
-    this.orders = [
-      {
-        id: 'b33faf20-114c-4f8d-bb56-47c1eeca77c1',
-        shippingStatus: ShippingStatus.Received,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        boxes: {
-          "1": 10,
-        },
-        customer: {
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          address: { houseNumber: 23,houseNumberAddition:'', streetName: 'Main St', city: 'Hometown', country: 'CA', postalCode: '12345' },
-          phoneNumber: '123-456-7890'
-        }
-      },
-      {
-        id: 'a12bc34d-e56f-78g9-0hi1-234j567k890l',
-        shippingStatus: ShippingStatus.Shipped,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        boxes: {
-          "2": 5,
-          "3": 2,
-        },
-        customer: {
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane.smith@example.com',
-          address: { houseNumber: 45,houseNumberAddition:'', streetName: 'Market St', city: 'Newtown', country: 'US', postalCode: '67890' },
-          phoneNumber: '098-765-4321'
-        }
-      }
-    ];
+  public async getbyId(id: string): Promise<Order> {
+    const order = await firstValueFrom(this.http.get<Order>(`${this.apiUrl}/${id}`));
+    order.createdAt = new Date(order.createdAt);
+    order.updatedAt = new Date(order.updatedAt? order.updatedAt : order.createdAt);
+    return order;
   }
 
-  public getbyId(id: string): Observable<Order> {
-    return this.http.get<Order>(`${this.apiUrl}/${id}`);
+  public async create(orderCreateDto: OrderCreateDto) {
+    const order = await firstValueFrom(this.http.post<Order>(`${this.apiUrl}`, orderCreateDto));
+    order.createdAt = new Date(order.createdAt);
+    order.updatedAt = new Date(order.updatedAt? order.updatedAt : order.createdAt);
+    return order;
   }
 
-  public create(orderCreateDto: OrderCreateDto) {
-    return firstValueFrom(this.http.post<Order>(`${this.apiUrl}`, orderCreateDto));
-  }
-
-  public update(id: string, boxUpdateDto: BoxUpdateDto) {
-    return firstValueFrom(this.http.put<Order>(`${this.apiUrl}/${id}`, boxUpdateDto));
+  public async update(id: string, boxUpdateDto: BoxUpdateDto) {
+    const order = await firstValueFrom(this.http.put<Order>(`${this.apiUrl}/${id}`, boxUpdateDto));
+    order.createdAt = new Date(order.createdAt);
+    order.updatedAt = new Date(order.updatedAt? order.updatedAt : order.createdAt);
+    return order;
   }
 
   public delete(id: string) : Observable<any> {
@@ -75,7 +48,10 @@ export class OrderService {
 
   public async getLatest() : Promise<Order[]> {
     const call = this.http.get<Order[]>(`${this.apiUrl}/latest`);
-    return await firstValueFrom(call);
+    const orders = await firstValueFrom(call);
+    orders.map(o => o.createdAt = new Date(o.createdAt));
+    orders.map(o => o.updatedAt = new Date(o.updatedAt? o.updatedAt : o.createdAt));
+    return orders;
   }
 
   public async getTotalRevenue() : Promise<number> {

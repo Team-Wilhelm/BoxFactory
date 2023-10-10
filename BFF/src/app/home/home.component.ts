@@ -15,6 +15,7 @@ export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
+  yaxis?: ApexXAxis;
   title: ApexTitleSubtitle;
 };
 
@@ -29,16 +30,18 @@ export class HomeComponent {
   ordersCount: number = 0;
   boxesSold: number = 0;
   totalRevenue: number = 0;
+  data: number[] = [];
 
   constructor(public orderService: OrderService) {
-   this.loadOrders();
-   this.loadStatistics();
+    this.loadOrders();
+    this.loadStatistics();
+    this.fetchDataForChart().then(data => this.data = data);
 
     this.chartOptions = {
       series: [
         {
-          name: "My-series",
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+          name: "Orders",
+          data: this.data
         }
       ],
       chart: {
@@ -46,10 +49,14 @@ export class HomeComponent {
         type: "bar"
       },
       title: {
-        text: "My First Angular Chart"
+        text: "Order overview"
       },
       xaxis: {
-        categories: ["Jan", "Feb",  "Mar",  "Apr",  "May",  "Jun",  "Jul",  "Aug", "Sep"]
+        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      },
+      yaxis: {
+        min: 0,
+        max: 10
       }
     };
   }
@@ -71,5 +78,19 @@ export class HomeComponent {
     } catch (error) {
       console.error('Error loading orders:', error);
     }
+  }
+
+  async fetchDataForChart() {
+    await this.orderService.get();
+    const data = [] as number[];
+    for (let i = 0; i < 12; i++) {
+      data[i] = this.orderService.orders.filter(o => o.createdAt.getMonth() == i).length as number;
+    }
+    console.log(data);
+    this.chartOptions.series![0] = {
+      name: "Orders",
+      data: data
+    }
+    return data;
   }
 }
