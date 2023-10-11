@@ -21,7 +21,6 @@
       </tr>
       </thead>
       <tbody>
-      <!-- row 1 -->
       <ng-template ngFor let-order [ngForOf]="latestOrders">
         <tr>
           <td>
@@ -71,30 +70,27 @@
         [series]="chartOptions.series!"
         [chart]="chartOptions.chart!"
         [xaxis]="chartOptions.xaxis!"
+        [yaxis]="chartOptions.yaxis!"
       ></apx-chart>
     </div>
   </div>
 
   <div class="stats stats-vertical shadow">
-
-    <div class="stat">
-      <div class="stat-title">Orders</div>
-      <div class="stat-value">{{ordersCount}}</div>
-      <div class="stat-desc">Doh!</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-title">Boxes sold</div>
-      <div class="stat-value">{{boxesSold}}</div>
-      <div class="stat-desc">Stonks ↗</div>
-    </div>
-
     <div class="stat">
       <div class="stat-title">Orders today</div>
       <div class="stat-value">{{ordersToday}}</div>
       <div class="stat-desc"> Our business model sucks</div>
     </div>
-
+    <div class="stat">
+      <div class="stat-title">Orders in total</div>
+      <div class="stat-value">{{ordersCount}}</div>
+      <div class="stat-desc">Doh!</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">Boxes sold</div>
+      <div class="stat-value">{{boxesSold}}</div>
+      <div class="stat-desc">Stonks ↗</div>
+    </div>
   </div>
 </div>
 

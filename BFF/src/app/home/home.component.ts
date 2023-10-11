@@ -31,8 +31,6 @@ export class HomeComponent {
     this.loadStatistics();
     this.fetchDataForChart().then(data => this.data = data);
 
-    this.ordersToday = orderService.orders.filter(o => o.createdAt.getDate() == new Date().getDate()).length;
-
     // TODO: Chart takes forever to load, fix this
     this.chartOptions = {
       series: [
@@ -50,6 +48,16 @@ export class HomeComponent {
       },
       xaxis: {
         categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      },
+      yaxis: {
+        title: {
+          text: "Orders"
+        },
+        labels: {
+          formatter: function (val) {
+            return val.toFixed(0);
+          }
+        }
       }
     };
   }
@@ -57,6 +65,7 @@ export class HomeComponent {
   async loadOrders() {
     try {
       this.latestOrders = await this.orderService.getLatest();
+      this.ordersToday = this.latestOrders.filter(o => o.createdAt.toDateString() == new Date().toDateString()).length;
       this.latestOrders = this.latestOrders.filter(o => o.shippingStatus == ShippingStatus.Received);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -87,7 +96,6 @@ export class HomeComponent {
         data: data
       }]
     };
-
     return data;
   }
 }

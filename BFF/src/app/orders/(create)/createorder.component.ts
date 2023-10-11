@@ -15,13 +15,13 @@ export class CreateorderComponent {
   order: OrderCreateDto;
   customer: CreateCustomerDto;
   address: CreateAddressDto;
-  boxes: Box[];
+  boxes: Box[] = [];
   addedBoxes: Record<string, number> = {};
   activeTab: string;
   amountFormControl = new FormControl(1, [Validators.required, Validators.min(1)]);
 
   constructor(public boxService: BoxService, public orderService: OrderService) {
-    this.boxes = boxService.boxes;
+    this.boxService.get().then(boxes => this.boxes = this.boxService.boxes);
     this.address = {
       streetName: "",
       city: "",

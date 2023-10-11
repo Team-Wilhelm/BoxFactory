@@ -9,8 +9,9 @@ import {Order, OrderCreateDto, ShippingStatus, ShippingStatusDto} from "../inter
 export class OrderService {
   orders: Order[] = [];
   private apiUrl = 'http://localhost:5133/Order';
+
   constructor(private http: HttpClient) {
-    this.get().then(r => console.log(this.orders));
+    this.get();
   }
 
   async get() {
