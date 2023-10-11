@@ -20,9 +20,11 @@ builder.Services.AddScoped<IDbConnection>(container =>
 
 builder.Services.AddScoped<BoxRepository>();
 builder.Services.AddScoped<OrderRepository>();
+builder.Services.AddScoped<StatsRepository>();
 builder.Services.AddScoped<BoxService>();
 builder.Services.AddControllers(options => options.Filters.Add<ExceptionFilter>());
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<StatsService>();
 
 builder.Services.AddScoped<DbInitialize>();
 

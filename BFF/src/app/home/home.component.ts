@@ -81,10 +81,11 @@ export class HomeComponent {
   }
 
   async fetchDataForChart() {
-    await this.orderService.get();
+    const monthOrderCountMap = await this.orderService.getOrdersCountByMonth();
     const data = [] as number[];
+
     for (let i = 0; i < 12; i++) {
-      data[i] = this.orderService.orders.filter(o => o.createdAt.getMonth() == i && o.createdAt.getFullYear() == new Date().getFullYear()).length as number;
+      data.push(monthOrderCountMap.get(i)? monthOrderCountMap.get(i)! : 0);
     }
 
     // Create a new object for chartOptions to trigger change detection
