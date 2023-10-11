@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
 using Models.Models;
+using Models.Util;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
@@ -51,7 +52,7 @@ public class SearchTests
         IEnumerable<Box> boxes;
         try
         {
-            boxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(content) ??
+            boxes = JsonConvert.DeserializeObject<GetBoxesResponse>(content)!.Boxes ??
                        throw new InvalidOperationException();
         }
         catch (Exception e)
@@ -104,7 +105,7 @@ public class SearchTests
         IEnumerable<Box> boxes;
         try
         {
-            boxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(content) ??
+            boxes = JsonConvert.DeserializeObject<GetBoxesResponse>(content)!.Boxes ??
                     throw new InvalidOperationException();
         }
         catch (Exception e)
