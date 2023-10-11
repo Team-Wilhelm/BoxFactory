@@ -1,6 +1,27 @@
 # Box Factory
 This is the first compulsory assignment in the third semester of computer science at EASV.
 
+![Homepage](Home.png)
+
+<details>
+
+  <summary>More Application looks</summary>
+
+### Boxes
+![Boxes](ListBox.png)  
+#### Create Box
+![Create Box](CreateBox.png)
+#### Update Box
+![Update Box](UpdateBox.png)
+
+### Orders
+![Orders](ListOrders.png)
+#### Create Order
+![Create Order](CreateOrder.png)
+
+</details>
+
+
 ## Run (in development)
 ### Backend
 ```bash
