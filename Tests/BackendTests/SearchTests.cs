@@ -1,21 +1,14 @@
-﻿using Dapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 using Models.Models;
+using Models.Util;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
 
 public class SearchTests
 {
-    private HttpClient _httpClient;
-
-    [SetUp]
-    public void Setup()
-    {
-        _httpClient = new HttpClient();
-    }
+    private readonly HttpClient _httpClient = new();
     
     [Test]
     [TestCase("red", 1, 10)]
@@ -59,7 +52,7 @@ public class SearchTests
         IEnumerable<Box> boxes;
         try
         {
-            boxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(content) ??
+            boxes = JsonConvert.DeserializeObject<GetBoxesResponse>(content)!.Boxes ??
                        throw new InvalidOperationException();
         }
         catch (Exception e)
@@ -71,7 +64,8 @@ public class SearchTests
         // with multiple words, both words must be present in either the colour or material column.
         var enumerable = boxes.ToList();
         var searchWords = searchTerm.Split(' ');
-        var count = enumerable.Count(box => searchWords.Any(word => box.Colour.Contains(word) || box.Material.Contains(word)));
+        var count = enumerable.Count(box => searchWords.Any(word => box.Material != null && box.Colour != null && (box.Colour.Contains(word) 
+            || box.Material.Contains(word))));
                     
         // Assert
         using (new AssertionScope())
@@ -111,7 +105,7 @@ public class SearchTests
         IEnumerable<Box> boxes;
         try
         {
-            boxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(content) ??
+            boxes = JsonConvert.DeserializeObject<GetBoxesResponse>(content)!.Boxes ??
                     throw new InvalidOperationException();
         }
         catch (Exception e)

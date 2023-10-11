@@ -54,7 +54,7 @@ public class DbInitialize
             Descending = false
         };
         var sorting = new Sorting(null, null);
-        var boxes = (await _boxService.Get(boxParameter, sorting)).Boxes.ToList();
+        var boxes = (await _boxService.Get(boxParameter, sorting)).Boxes!.ToList();
 
         var firstNames = new List<string> {"John", "Jane", "Jim", "Jenny", "James", "Judy", "Joe", "Jessica", "Jack", "Julia"};
 
@@ -103,12 +103,12 @@ public class DbInitialize
                             LastName = lastNames[rnd.Next(lastNames.Count)],
                             Email =
                                 $"{firstNames[rnd.Next(firstNames.Count)]}.{lastNames[rnd.Next(lastNames.Count)]}@gmail.com",
-                            PhoneNumber = String.Join("", Enumerable.Range(0, 10).Select(n => rnd.Next(10).ToString()))
+                            PhoneNumber = string.Join("", Enumerable.Range(0, 10).Select(n => rnd.Next(10).ToString()))
                         }
                     };
                     await _orderService.Create(createOrder, date);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     numberOfBoxes++;
                 }

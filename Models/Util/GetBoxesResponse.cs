@@ -4,6 +4,6 @@ namespace Models.Util;
 
 public class GetBoxesResponse
 {
-    public IEnumerable<Box> Boxes { get; set; }
+    public IEnumerable<Box>? Boxes { get; set; }
     public int PageCount { get; set; }
 }

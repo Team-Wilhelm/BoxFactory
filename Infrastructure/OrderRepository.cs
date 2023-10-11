@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using Dapper;
-using Models;
 using Models.DTOs;
 using Models.Models;
 
@@ -38,9 +37,9 @@ public class OrderRepository
 
             var address = await CreateOrReturnAddress(orderToCreate.Customer.Address, transaction);
 
-            await AddCustomerAddressLink(customer.Email, address.Id, transaction);
+            await AddCustomerAddressLink(customer.Email!, address.Id, transaction);
 
-            var order = await CreateOrder(customer.Email, address.Id, transaction, date);
+            var order = await CreateOrder(customer.Email!, address.Id, transaction, date);
             customer.Address = address;
             order.Customer = customer;
 
@@ -426,7 +425,7 @@ FROM {_databaseSchema}.box_order_link
         }
     }
 
-    public async Task FetchAdditionalOrderInfo(Order order)
+    private async Task FetchAdditionalOrderInfo(Order order)
     {
         order.Boxes = await GetBoxesForOrder(order.Id);
         var customer = await GetCustomer(order.Id);

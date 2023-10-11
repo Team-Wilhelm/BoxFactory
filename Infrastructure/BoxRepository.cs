@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using Dapper;
-using Models;
 using Models.Models;
 using Models.Util;
 
@@ -75,7 +74,7 @@ public class BoxRepository
     public async Task<Box> Create(Box box)
     {
         var transaction = _dbConnection.BeginTransaction();
-        var dimensions = InsertDimensions(box.Dimensions, transaction);
+        var dimensions = InsertDimensions(box.Dimensions!, transaction);
 
         var sql =
             @$"INSERT INTO {_databaseSchema}.boxes (weight, colour, material, price, stock, dimensions_id, created_at)
@@ -131,7 +130,7 @@ public class BoxRepository
             box.Price
         });
 
-        updatedBox.Dimensions = UpdateDimensions(box.Id, box.Dimensions, transaction);
+        updatedBox.Dimensions = UpdateDimensions(box.Id, box.Dimensions!, transaction);
         transaction.Commit();
         return updatedBox;
     }
@@ -190,7 +189,7 @@ public class BoxRepository
             dimensions.Length,
             dimensions.Width,
             dimensions.Height
-        });
+        }, transaction);
     }
 
     private Dimensions GetDimensionsByBoxId(Guid boxId)
