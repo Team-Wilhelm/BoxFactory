@@ -7,17 +7,7 @@ namespace Tests.BackendTests;
 
 public class SearchTests
 {
-    private readonly HttpClient _httpClient;
-
-    public SearchTests(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-    }
+    private readonly HttpClient _httpClient = new();
     
     [Test]
     [TestCase("red", 1, 10)]

@@ -7,19 +7,9 @@ namespace Tests.BackendTests;
 
 public class GetTests
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = new();
 
-    public GetTests(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
-     [Test]
+    [Test]
     public async Task GetAllBoxes()
     {
         // Arrange

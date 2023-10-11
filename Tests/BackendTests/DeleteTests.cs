@@ -7,18 +7,8 @@ namespace Tests.BackendTests;
 
 public class DeleteTests
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = new();
 
-    public DeleteTests(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
     [Test]
     public async Task DeleteBoxSuccess()
     {

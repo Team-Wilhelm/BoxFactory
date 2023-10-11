@@ -9,17 +9,7 @@ namespace Tests.BackendTests;
 
 public class  UpdateTests
 {
-    private readonly HttpClient _httpClient;
-
-    public UpdateTests(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-    }
+    private readonly HttpClient _httpClient = new();
 
     [Test]
     [TestCase(30, "blue", "plastic", 100, 200, 200, 200, 200)]
