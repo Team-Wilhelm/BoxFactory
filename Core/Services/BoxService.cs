@@ -19,7 +19,7 @@ public class BoxService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
+    public async Task<GetBoxesResponse> Get(BoxParameters boxParameters, Sorting sorting)
     {
         return await _boxRepository.Get(boxParameters, sorting);
     }

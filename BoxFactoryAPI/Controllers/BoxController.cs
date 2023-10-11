@@ -18,7 +18,7 @@ public class BoxController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Box>>> Get([FromQuery] BoxParameters boxParameters)
+    public async Task<ActionResult<GetBoxesResponse>> Get([FromQuery] BoxParameters boxParameters)
     {
         var sorting = new Sorting(boxParameters.SortBy, boxParameters.Descending);
         return Ok(await _boxService.Get(boxParameters, sorting));
