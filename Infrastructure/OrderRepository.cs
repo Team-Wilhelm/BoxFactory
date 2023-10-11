@@ -14,10 +14,9 @@ public class OrderRepository
     public OrderRepository(IDbConnection dbConnection)
     {
         _dbConnection = dbConnection;
-        /*_databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+        _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ?  "testing"
-            :  "production";*/
-        _databaseSchema = "testing";
+            :  "production";
     }
 
     public async Task<Order> Create(OrderCreateDto orderToCreate)
@@ -268,14 +267,15 @@ public class OrderRepository
         try
         {
             var insertCustomerSql =
-                @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, customer_email, phone_number) 
-                VALUES (@FirstName, @LastName, @Email, @PhoneNumber) 
+                @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, customer_email, phone_number, simpson_img_url) 
+                VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @SimpsonImgUrl) 
                 ON CONFLICT (customer_email) DO NOTHING
                 RETURNING  
                 first_name AS {nameof(Customer.FirstName)}, 
                 last_name AS {nameof(Customer.LastName)}, 
                 customer_email AS {nameof(Customer.Email)}, 
-                phone_number AS {nameof(Customer.PhoneNumber)}";
+                phone_number AS {nameof(Customer.PhoneNumber)},
+                simpson_img_url AS {nameof(Customer.SimpsonImgUrl)}";
 
             return await _dbConnection.QuerySingleAsync<Customer>(insertCustomerSql, customerToCreate, transaction);
         }
@@ -367,7 +367,8 @@ FROM {_databaseSchema}.addresses a INNER JOIN {_databaseSchema}.orders o ON a.ad
     o.customer_email AS {nameof(Customer.Email)},
     c.first_name AS {nameof(Customer.FirstName)},
     c.last_name AS {nameof(Customer.LastName)},
-    c.phone_number AS {nameof(Customer.PhoneNumber)} 
+    c.phone_number AS {nameof(Customer.PhoneNumber)},
+    c.simpson_img_url AS {nameof(Customer.SimpsonImgUrl)}
 FROM {_databaseSchema}.customers c INNER JOIN {_databaseSchema}.orders o ON c.customer_email = o.customer_email
     WHERE o.order_id = @OrderId
 ";
