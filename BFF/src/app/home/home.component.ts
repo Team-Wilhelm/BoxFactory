@@ -31,7 +31,6 @@ export class HomeComponent {
     this.loadStatistics();
     this.fetchDataForChart().then(data => this.data = data);
 
-    // TODO: Chart takes forever to load, fix this
     this.chartOptions = {
       series: [
         {
@@ -85,7 +84,7 @@ export class HomeComponent {
     await this.orderService.get();
     const data = [] as number[];
     for (let i = 0; i < 12; i++) {
-      data[i] = this.orderService.orders.filter(o => o.createdAt.getMonth() == i).length as number;
+      data[i] = this.orderService.orders.filter(o => o.createdAt.getMonth() == i && o.createdAt.getFullYear() == new Date().getFullYear()).length as number;
     }
 
     // Create a new object for chartOptions to trigger change detection
