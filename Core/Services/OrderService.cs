@@ -14,13 +14,12 @@ public class OrderService
         _orderRepository = orderRepository;
     }
 
-    public async Task<Order> Create(OrderCreateDto orderCreateDto)
+    public async Task<Order> Create(OrderCreateDto orderCreateDto, DateTime? date = null)
     {
         if (orderCreateDto.Boxes.Count == 0) throw new Exception("No boxes in order.");
         try
         {
-            var order = await _orderRepository.Create(orderCreateDto);
-            return order;
+            return await _orderRepository.Create(orderCreateDto, date);
         }
         catch (Exception e)
         {

@@ -4,7 +4,6 @@
     <th></th>
     <th>Created at</th>
     <th>Customer email</th>
-    <th>Shipping status</th>
     <th>Num of boxes</th>
     <th></th>
   </tr>
@@ -12,9 +11,6 @@
   <tbody>
     <ng-template ngFor let-order [ngForOf]="orderService.orders">
       <tr>
-        <td> {{order.id}} </td>
-        <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
-        <td> {{order.customer?.email}} </td>
         <td class="flex gap-3">
           <div class="avatar">
             <div class="w-24 shadow-lg rounded-full ring ring-0 ring-offset-base-100 ring-offset-2">
@@ -27,6 +23,8 @@
             {{order.shippingStatus}}
           </h3>
         </td>
+        <td class="text-right"> {{order.createdAt | date:'HH:mm dd MMM YYYY'}} </td>
+        <td> {{order.customer?.email}} </td>
         <td> {{Object.keys(order.boxes).length}} </td>
         <td class="text-right">
           <div class="dropdown dropdown-end">
@@ -60,7 +58,6 @@
     <th></th>
     <th>Created at</th>
     <th>Customer email</th>
-    <th>Shipping status</th>
     <th>Num of boxes</th>
     <th></th>
   </tr>

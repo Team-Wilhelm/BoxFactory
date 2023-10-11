@@ -19,7 +19,7 @@ public class OrderRepository
             :  "production";
     }
 
-    public async Task<Order> Create(OrderCreateDto orderToCreate)
+    public async Task<Order> Create(OrderCreateDto orderToCreate, DateTime? date = null)
     {
         using var transaction = _dbConnection.BeginTransaction();
         try
@@ -30,7 +30,7 @@ public class OrderRepository
 
             await AddCustomerAddressLink(customer.Email, address.Id, transaction);
 
-            var order = await CreateOrder(customer.Email, address.Id, transaction);
+            var order = await CreateOrder(customer.Email, address.Id, transaction, date);
             customer.Address = address;
             order.Customer = customer;
 
@@ -173,7 +173,7 @@ public class OrderRepository
     }
 
 
-    private async Task<Order> CreateOrder(string customerEmail, Guid addressId, IDbTransaction transaction)
+    private async Task<Order> CreateOrder(string customerEmail, Guid addressId, IDbTransaction transaction, DateTime? customCreatedAt = null)
     {
         var insertOrderSql =
             @$"INSERT INTO {_databaseSchema}.orders (status, created_at, updated_at, customer_email, address_id) 
@@ -187,8 +187,8 @@ public class OrderRepository
         var order = await _dbConnection.QuerySingleAsync<Order>(insertOrderSql, new
         {
             Status = ShippingStatus.Received.ToString(),
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now,
+            CreatedAt = customCreatedAt ?? DateTime.Now,
+            UpdatedAt = customCreatedAt ?? DateTime.Now,
             CustomerEmail = customerEmail,
             AddressId = addressId
         }, transaction);
