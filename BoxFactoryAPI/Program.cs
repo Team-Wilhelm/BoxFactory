@@ -1,6 +1,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using BoxFactoryAPI;
 using BoxFactoryAPI.Exceptions;
 using Core.Mapping;
 using Core.Services;
@@ -22,6 +23,9 @@ builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<BoxService>();
 builder.Services.AddControllers(options => options.Filters.Add<ExceptionFilter>());
 builder.Services.AddScoped<OrderService>();
+
+builder.Services.AddScoped<DbInitialize>();
+
 builder.Services.AddControllers().AddJsonOptions(options => 
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -47,6 +51,17 @@ app.UseExceptionHandler(a => a.Run(async context => {
     await context.Response.WriteAsJsonAsync(
         new ErrorResponse("", statusCode, trace, "Something went wrong"));
 }));
+
+if (app.Environment.IsDevelopment())
+{
+    if (args.Contains("db-init") || args.Contains("--db-init"))
+    {
+        using var scope = app.Services.CreateScope();
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitialize>();
+        await dbInitializer.InitializeData();
+    }
+}
+
 
 if (app.Environment.IsDevelopment())
 {
