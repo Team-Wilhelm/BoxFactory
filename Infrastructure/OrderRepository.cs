@@ -276,18 +276,34 @@ public class OrderRepository
     {
         try
         {
-            var insertCustomerSql =
-                @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, customer_email, phone_number, simpson_img_url) 
-                VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @SimpsonImgUrl) 
-                ON CONFLICT (customer_email) DO NOTHING
-                RETURNING  
-                first_name AS {nameof(Customer.FirstName)}, 
-                last_name AS {nameof(Customer.LastName)}, 
-                customer_email AS {nameof(Customer.Email)}, 
-                phone_number AS {nameof(Customer.PhoneNumber)},
-                simpson_img_url AS {nameof(Customer.SimpsonImgUrl)}";
+            try
+            {
+                var insertCustomerSql =
+                        @$"INSERT INTO {_databaseSchema}.customers (first_name, last_name, customer_email, phone_number, simpson_img_url) 
+                        VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @SimpsonImgUrl) 
+                        ON CONFLICT (customer_email) DO NOTHING 
+                        RETURNING 
+                        first_name AS {nameof(Customer.FirstName)},
+                        last_name AS {nameof(Customer.LastName)},
+                        customer_email AS {nameof(Customer.Email)},
+                        phone_number AS {nameof(Customer.PhoneNumber)},
+                        simpson_img_url AS {nameof(Customer.SimpsonImgUrl)}";
 
-            return await _dbConnection.QuerySingleAsync<Customer>(insertCustomerSql, customerToCreate, transaction);
+                return await _dbConnection.QuerySingleAsync<Customer>(insertCustomerSql, customerToCreate, transaction);
+            }
+            catch
+            {
+                var selectCustomerSql = 
+                        @$"SELECT 
+                        first_name AS {nameof(Customer.FirstName)},
+                        last_name AS {nameof(Customer.LastName)},
+                        customer_email AS {nameof(Customer.Email)},
+                        phone_number AS {nameof(Customer.PhoneNumber)}
+                        FROM {_databaseSchema}.customers 
+                        WHERE customer_email = @Email";
+
+                return await _dbConnection.QuerySingleAsync<Customer>(selectCustomerSql, customerToCreate, transaction);
+            }
         }
         catch (Exception e)
         {
