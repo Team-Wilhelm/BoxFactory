@@ -10,15 +10,13 @@ import {BoxListModule} from "./boxlist/boxlist.module";
 import {NG_VALIDATORS, ReactiveFormsModule} from "@angular/forms";
 import {positiveNumberValidator} from "./positiveNumberValidator";
 import {OrdersModule} from "./orders/orders.module";
-import {OrderRowComponent} from "./home/order-row/order-row.component";
 import {OrderService} from "./services/order-service";
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
-    HomeComponent,
-    OrderRowComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,

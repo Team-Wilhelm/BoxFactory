@@ -24,6 +24,16 @@ public class OrderRepository
         using var transaction = _dbConnection.BeginTransaction();
         try
         {
+            var rnd = new Random();
+            var simpsons = new List<string>()
+            {
+                "/assets/img/Abe.png", 
+                "/assets/img/Burns.png", 
+                "/assets/img/Moe.png", 
+                "/assets/img/Homer.png"
+            };
+            orderToCreate.Customer.SimpsonImgUrl = simpsons[rnd.Next(simpsons.Count)];
+            
             var customer = await CreateOrReturnCustomer(orderToCreate.Customer, transaction);
 
             var address = await CreateOrReturnAddress(orderToCreate.Customer.Address, transaction);

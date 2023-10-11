@@ -22,4 +22,6 @@ public class CreateCustomerDto
     [Required]
     [MinLength(8)]
     public string PhoneNumber { get; set; } = null!;
+
+    public string? SimpsonImgUrl { get; set; }
 }
