@@ -18,7 +18,7 @@ public class DbInitialize
     public async Task InitializeData()
     {
         var rnd = new Random();
-        var numberOfBoxes = rnd.Next(50, 100);
+        var numberOfBoxes = rnd.Next(20, 30);
         var materials = new List<string> {"cardboard", "plastic", "wood", "metal"};
 
         var colors = new List<string> {"red", "blue", "green", "yellow", "black", 
@@ -67,14 +67,15 @@ public class DbInitialize
         var houseNumberAdditions = new List<string> {"A", "B", "C", "D", "", "", "", "", "", ""}; // Assuming house number addition can be an empty string
         var date = DateTime.Now;
         Console.WriteLine("Creating orders...");
-        for (int i = 0; i < 12; i++)
+        var currentMonth = date.Month;
+        for (int i = 0; i < currentMonth; i++)
         {
-            Console.WriteLine($"{i/12.0*100}%");
-            date = date.AddMonths(-i);
-            var numberOfOrders = rnd.Next(50, 150);
+            Console.WriteLine($"{i/currentMonth*100}%");
+            date = date.AddMonths(-1);
+            var numberOfOrders = rnd.Next(5, 15);
             for (int j = 0; j < numberOfOrders; j++)
             {
-                var numberOfBoxesInOrder = rnd.Next(1, 10);
+                var numberOfBoxesInOrder = rnd.Next(1, 3);
                 var saveBoxes = new Dictionary<Guid, int>();
                 for (int k = 0; k < numberOfBoxesInOrder; k++)
                 {

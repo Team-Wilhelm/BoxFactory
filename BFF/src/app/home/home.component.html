@@ -45,7 +45,7 @@
           <td>
             {{order.totalBoxes}} boxes
           </td>
-          <td>{{order.totalPrice}}€</td>
+          <td>{{order.totalPrice | number:'1.2-2'}}€</td>
         </tr>
       </ng-template>
       </tbody>
