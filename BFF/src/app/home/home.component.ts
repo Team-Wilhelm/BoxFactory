@@ -1,21 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 
-import {
-  ChartComponent,
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexXAxis,
-  ApexTitleSubtitle
-} from "ng-apexcharts";
+import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from "ng-apexcharts";
 import {OrderService} from "../services/order-service";
-import {Order} from "../interfaces/order-interface";
+import {Order, ShippingStatus} from "../interfaces/order-interface";
 
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
-  yaxis?: ApexXAxis;
+  yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
 };
 
@@ -29,13 +23,15 @@ export class HomeComponent {
   latestOrders: Order[] = [];
   ordersCount: number = 0;
   boxesSold: number = 0;
-  totalRevenue: number = 0;
+  ordersToday: number = 0;
   data: number[] = [];
 
   constructor(public orderService: OrderService) {
     this.loadOrders();
     this.loadStatistics();
     this.fetchDataForChart().then(data => this.data = data);
+
+    this.ordersToday = orderService.orders.filter(o => o.createdAt.getDate() == new Date().getDate()).length;
 
     // TODO: Chart takes forever to load, fix this
     this.chartOptions = {
@@ -54,10 +50,6 @@ export class HomeComponent {
       },
       xaxis: {
         categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      },
-      yaxis: {
-        min: 0,
-        max: 10
       }
     };
   }
@@ -65,7 +57,7 @@ export class HomeComponent {
   async loadOrders() {
     try {
       this.latestOrders = await this.orderService.getLatest();
-      console.log(this.latestOrders);
+      this.latestOrders = this.latestOrders.filter(o => o.shippingStatus == ShippingStatus.Received);
     } catch (error) {
       console.error('Error loading orders:', error);
     }
@@ -75,7 +67,6 @@ export class HomeComponent {
     try {
       this.ordersCount = await this.orderService.getOrdersCount();
       this.boxesSold = await this.orderService.getBoxesSold();
-      this.totalRevenue = await this.orderService.getTotalRevenue();
     } catch (error) {
       console.error('Error loading orders:', error);
     }
@@ -87,11 +78,16 @@ export class HomeComponent {
     for (let i = 0; i < 12; i++) {
       data[i] = this.orderService.orders.filter(o => o.createdAt.getMonth() == i).length as number;
     }
-    console.log(data);
-    this.chartOptions.series![0] = {
-      name: "Orders",
-      data: data
-    }
+
+    // Create a new object for chartOptions to trigger change detection
+    this.chartOptions = {
+      ...this.chartOptions,
+      series: [{
+        name: "Orders",
+        data: data
+      }]
+    };
+
     return data;
   }
 }
