@@ -40,7 +40,7 @@ export class CreateorderComponent {
     this.boxService.get().then(boxes => this.boxes = this.boxService.boxes);
     this.order = {
       boxes: {},
-      customer: {}
+      customer: { simpsonImgUrl:"" }
     };
     this.activeTab = "box-tab";
   }

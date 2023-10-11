@@ -8,6 +8,7 @@ export interface Customer {
   address?: Address; // Assuming that Address is another interface we defined in TypeScript
   phoneNumber?: string; // string? in C# is represented as Optional String in TypeScript
   orders?: Order[]; // Assuming Order is another interface we defined in TypeScript. List<T> in C# = T[] in TypeScript
+  simpsonImgUrl: string;
 }
 
 export interface CreateCustomerDto {
@@ -16,4 +17,5 @@ export interface CreateCustomerDto {
   email?: string;
   address?: CreateAddressDto;
   phoneNumber?: string;
+  simpsonImgUrl?: string;
 }
