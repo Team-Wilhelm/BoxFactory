@@ -16,7 +16,7 @@ public class StatsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<StatsDto>> Get()
+    public async Task<ActionResult<Dictionary<int,int>>> Get()
     {
         return Ok(await _statsService.GetStats());
     }

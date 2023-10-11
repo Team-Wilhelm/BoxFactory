@@ -17,7 +17,7 @@ public class StatsRepository
             : "production";
     }
 
-    public async Task<StatsDto> GetStats()
+    public async Task<Dictionary<int,int>> GetStats()
     {
         var statsSql = @$"
     SELECT
@@ -45,9 +45,7 @@ public class StatsRepository
             var statsListMonth = statsList[i].month - 1;
             statsDictionary[statsListMonth] = statsList[i].boxes;
         }
-        return new StatsDto
-        {
-            OrdersPerMonth = statsDictionary
-        };
+
+        return statsDictionary;
     }
 }

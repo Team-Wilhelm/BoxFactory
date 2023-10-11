@@ -12,7 +12,7 @@ public class StatsService
         _statsRepository = statsRepository;
     }
     
-    public async Task<StatsDto> GetStats()
+    public async Task<Dictionary<int, int>> GetStats()
     {
         try
         {
