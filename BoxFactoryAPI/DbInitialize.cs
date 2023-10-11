@@ -54,7 +54,7 @@ public class DbInitialize
             Descending = false
         };
         var sorting = new Sorting(null, null);
-        var boxes = (await _boxService.Get(boxParameter, sorting)).ToList();
+        var boxes = (await _boxService.Get(boxParameter, sorting)).Boxes.ToList();
 
         var firstNames = new List<string> {"John", "Jane", "Jim", "Jenny", "James", "Judy", "Joe", "Jessica", "Jack", "Julia"};
 

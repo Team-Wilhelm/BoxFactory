@@ -23,7 +23,7 @@ public class BoxRepository
         _materials = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.materials").ToList();
     }
 
-    public async Task<IEnumerable<Box>> Get(BoxParameters boxParameters, Sorting sorting)
+    public async Task<GetBoxesResponse> Get(BoxParameters boxParameters, Sorting sorting)
     {
         var searchQuery = GetSearchAndFilterQuery(boxParameters).Keys.First();
         var parameters = GetSearchAndFilterQuery(boxParameters).Values.First();
@@ -45,7 +45,14 @@ public class BoxRepository
         parameters.Add("Offset", (boxParameters.CurrentPage - 1) * boxParameters.BoxesPerPage);
         var boxes = (await _dbConnection.QueryAsync<Box>(boxSql, parameters)).ToList();
         boxes.ToList().ForEach(box => box.Dimensions = GetDimensionsByBoxId(box.Id));
-        return boxes;
+        
+        var countSql = @$"SELECT COUNT(*) FROM {_databaseSchema}.boxes {searchQuery}";
+        var count = await _dbConnection.QuerySingleAsync<int>(countSql, parameters);
+        var pageCount = count % boxParameters.BoxesPerPage == 0
+            ? count / boxParameters.BoxesPerPage
+            : count / boxParameters.BoxesPerPage + 1;
+        
+        return new GetBoxesResponse { Boxes = boxes, PageCount = pageCount };
     }
 
     public async Task<Box> Get(Guid id)
