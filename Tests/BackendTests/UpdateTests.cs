@@ -1,8 +1,6 @@
 ﻿using System.Net.Http.Json;
-using Dapper;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 using Models.DTOs;
 using Models.Models;
 using Newtonsoft.Json;
@@ -11,13 +9,7 @@ namespace Tests.BackendTests;
 
 public class  UpdateTests
 {
-    private HttpClient _httpClient;
-
-    [SetUp]
-    public void Setup()
-    {
-        _httpClient = new HttpClient();
-    }
+    private readonly HttpClient _httpClient = new();
 
     [Test]
     [TestCase(30, "blue", "plastic", 100, 200, 200, 200, 200)]
@@ -80,7 +72,7 @@ public class  UpdateTests
                     .Excluding(b => b.CreatedAt);
             });
 
-            updateBoxDto.DimensionsDto.Length.Should().Be(responseBox.Dimensions.Length);
+            updateBoxDto.DimensionsDto.Length.Should().Be(responseBox.Dimensions!.Length);
             updateBoxDto.DimensionsDto.Width.Should().Be(responseBox.Dimensions.Width);
             updateBoxDto.DimensionsDto.Height.Should().Be(responseBox.Dimensions.Height);
         }

@@ -1,22 +1,16 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 using Models.Models;
+using Models.Util;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
 
 public class GetTests
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient = new();
 
-    [SetUp]
-    public void Setup()
-    {
-        _httpClient = new HttpClient();
-    }
-    
-     [Test]
+    [Test]
     public async Task GetAllBoxes()
     {
         // Arrange
@@ -46,8 +40,8 @@ public class GetTests
         IEnumerable<Box> dbBoxes;
         try
         {
-            dbBoxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(await response.Content.ReadAsStringAsync()) ??
-                      throw new InvalidOperationException();
+            dbBoxes = JsonConvert.DeserializeObject<GetBoxesResponse>(
+                await response.Content.ReadAsStringAsync())!.Boxes ?? throw new InvalidOperationException();
         }
         catch (Exception e)
         {
