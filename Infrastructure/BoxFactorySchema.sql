@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS testing.Customers
     "customer_email"        varchar PRIMARY KEY,
     "phone_number" varchar(20),
     "first_name"   varchar(25),
-    "last_name"    varchar
+    "last_name"    varchar,
+    "simpson_img_url" varchar
 );
 
 CREATE TABLE IF NOT EXISTS testing.Addresses

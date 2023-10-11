@@ -1,6 +1,6 @@
 <div class="flex gap-3 mb-3 h-auto mx-3">
-  <div class="card w-96 bg-base-100 shadow" >
-    <figure><img src="assets/img/gdyd7htj.png" alt="Shoes" /></figure>
+  <div class="card w-96 bg-base-100 shadow">
+    <figure><img src="assets/img/gdyd7htj.png" alt="Shoes"/></figure>
     <div class="card-body">
       <h2 class="card-title">Box factory!
         <div class="badge badge-secondary">NEW</div>
@@ -9,242 +9,59 @@
     </div>
   </div>
   <div class="overflow-x-auto card flex-grow bg-base-100 shadow" style="max-height: 450px;">
-    <h1 class="card-title pt-5 pl-5">List of recent orders</h1>
+    <h1 class="card-title pt-5 pl-5">Latest received orders</h1>
     <table class="table">
       <!-- head -->
       <thead>
       <tr>
-        <th>Name</th>
-        <th>Job</th>
-        <th>Favorite Color</th>
-        <th></th>
+        <th>ID</th>
+        <th>Customer</th>
+        <th>Boxes</th>
+        <th>Price</th>
       </tr>
       </thead>
       <tbody>
-      <!-- row 1 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Burns.png" alt="Avatar Tailwind CSS Component" />
+      <ng-template ngFor let-order [ngForOf]="latestOrders">
+        <tr>
+          <td>
+            <div class="flex items-center space-x-3">
+              <div class="avatar">
+                <div class="mask mask-squircle w-12 h-12">
+                  <img src="assets/img/Burns.png" alt="Avatar Tailwind CSS Component"/>
+                </div>
+              </div>
+              <div>
+                <div class="font-bold">{{order.id}}</div>
+                <div class="text-sm opacity-50">{{order.shippingStatus}}</div>
               </div>
             </div>
-            <div>
-              <div class="font-bold">Charles Montgomery Burns</div>
-              <div class="text-sm opacity-50">United States</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Zemlak, Daniel and Leannon
-          <br/>
-          <span class="badge badge-ghost badge-sm">Desktop Support Technician</span>
-        </td>
-        <td>Purple</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 2 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Homer.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Homer Jay Simpson</div>
-              <div class="text-sm opacity-50">China</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Carroll Group
-          <br/>
-          <span class="badge badge-ghost badge-sm">Tax Accountant</span>
-        </td>
-        <td>Red</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 3 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Moe.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Moe Szyslak</div>
-              <div class="text-sm opacity-50">Russia</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Rowe-Schoen
-          <br/>
-          <span class="badge badge-ghost badge-sm">Office Assistant I</span>
-        </td>
-        <td>Crimson</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 4 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Abe.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Abraham Jebediah "Abe" Simpson II</div>
-              <div class="text-sm opacity-50">Brazil</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Wyman-Ledner
-          <br/>
-          <span class="badge badge-ghost badge-sm">Community Outreach Specialist</span>
-        </td>
-        <td>Indigo</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 5 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Burns.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Charles Montgomery Burns</div>
-              <div class="text-sm opacity-50">United States</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Zemlak, Daniel and Leannon
-          <br/>
-          <span class="badge badge-ghost badge-sm">Desktop Support Technician</span>
-        </td>
-        <td>Purple</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 6 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Homer.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Homer Jay Simpson</div>
-              <div class="text-sm opacity-50">China</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Carroll Group
-          <br/>
-          <span class="badge badge-ghost badge-sm">Tax Accountant</span>
-        </td>
-        <td>Red</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 7 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Moe.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Moe Szyslak</div>
-              <div class="text-sm opacity-50">Russia</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Rowe-Schoen
-          <br/>
-          <span class="badge badge-ghost badge-sm">Office Assistant I</span>
-        </td>
-        <td>Crimson</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
-      <!-- row 8 -->
-      <tr>
-        <td>
-          <div class="flex items-center space-x-3">
-            <div class="avatar">
-              <div class="mask mask-squircle w-12 h-12">
-                <img src="assets/img/Abe.png" alt="Avatar Tailwind CSS Component" />
-              </div>
-            </div>
-            <div>
-              <div class="font-bold">Abraham Jebediah "Abe" Simpson II</div>
-              <div class="text-sm opacity-50">Brazil</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          Wyman-Ledner
-          <br/>
-          <span class="badge badge-ghost badge-sm">Community Outreach Specialist</span>
-        </td>
-        <td>Indigo</td>
-        <th>
-          <button class="btn btn-ghost btn-xs">details</button>
-          <button class="btn btn-error btn-xs">delete</button>
-        </th>
-      </tr>
+          </td>
+          <td>
+            {{order.customer?.email}}
+            <br/>
+            <span class="badge badge-ghost badge-sm">{{order.customer?.address?.city}}
+              , {{order.customer?.address?.country}}</span>
+          </td>
+          <td>
+            {{order.totalBoxes}} boxes
+          </td>
+          <td>{{order.totalPrice}}€</td>
+        </tr>
+      </ng-template>
       </tbody>
       <!-- foot -->
       <tfoot>
       <tr>
-        <th>Name</th>
-        <th>Job</th>
-        <th>Favorite Color</th>
-        <th></th>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Boxes</th>
+        <th>Price</th>
       </tr>
       </tfoot>
 
     </table>
   </div>
 </div>
-
-
 
 <div class="flex gap-3 mx-3">
   <div class="card flex-grow bg-base-100 shadow">
@@ -253,30 +70,27 @@
         [series]="chartOptions.series!"
         [chart]="chartOptions.chart!"
         [xaxis]="chartOptions.xaxis!"
+        [yaxis]="chartOptions.yaxis!"
       ></apx-chart>
     </div>
   </div>
 
   <div class="stats stats-vertical shadow">
-
     <div class="stat">
-      <div class="stat-title">Boxes</div>
-      <div class="stat-value">31K</div>
-      <div class="stat-desc">Jan 1st - Feb 1st</div>
+      <div class="stat-title">Orders today</div>
+      <div class="stat-value">{{ordersToday}}</div>
+      <div class="stat-desc"> Our business model sucks</div>
     </div>
-
     <div class="stat">
-      <div class="stat-title">New Boxes</div>
-      <div class="stat-value">1,200</div>
-      <div class="stat-desc">↗︎ 400 (22%)</div>
+      <div class="stat-title">Orders in total</div>
+      <div class="stat-value">{{ordersCount}}</div>
+      <div class="stat-desc">Doh!</div>
     </div>
-
     <div class="stat">
-      <div class="stat-title">New Orders</div>
-      <div class="stat-value">4,200</div>
-      <div class="stat-desc">↘︎ 90 (14%)</div>
+      <div class="stat-title">Boxes sold</div>
+      <div class="stat-value">{{boxesSold}}</div>
+      <div class="stat-desc">Stonks ↗</div>
     </div>
-
   </div>
 </div>
 
