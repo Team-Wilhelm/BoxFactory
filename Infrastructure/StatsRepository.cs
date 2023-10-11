@@ -22,12 +22,12 @@ public class StatsRepository
         var statsSql = @$"
     SELECT
         EXTRACT(MONTH FROM o.created_at) AS Month,
-        COUNT(bol.quantity) AS Boxes
+        SUM(bol.quantity) AS Boxes
     FROM {_databaseSchema}.orders o 
     INNER JOIN {_databaseSchema}.box_order_link bol ON o.order_id = bol.order_id 
     WHERE o.created_at > NOW() - INTERVAL '12 months'
     GROUP BY EXTRACT(MONTH FROM o.created_at)
-    ORDER BY EXTRACT(MONTH FROM o.created_at) ASC;
+    ORDER BY EXTRACT(MONTH FROM o.created_at);
 ";
 
         var statsList = await _dbConnection.QueryAsync(statsSql);

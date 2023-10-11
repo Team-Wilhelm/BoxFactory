@@ -4,6 +4,8 @@ using Models.DTOs;
 
 namespace BoxFactoryAPI.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class StatsController : ControllerBase
 {
     private readonly StatsService _statsService;
