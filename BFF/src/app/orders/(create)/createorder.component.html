@@ -62,8 +62,9 @@
                 <span class="label-text">First Name:</span>
               </label>
               <input type="text" placeholder="Enter first name" class="input input-bordered w-full"
-                     [(ngModel)]="customer.firstName"
-                     id="firstName" name="firstName"/>
+                     id="firstName" name="firstName"
+                     [formControl]="customerForm.controls.firstName"
+              />
             </div>
 
             <!-- This input collects the last name of the customer -->
@@ -72,8 +73,9 @@
                 <span class="label-text">Last Name:</span>
               </label>
               <input type="text" placeholder="Enter last name" class="input input-bordered w-full"
-                     [(ngModel)]="customer.lastName"
-                     id="lastName" name="lastName"/>
+                     id="lastName" name="lastName"
+                     [formControl]="customerForm.controls.lastName"
+              />
             </div>
 
           </div>
@@ -83,9 +85,10 @@
             <label class="label">
               <span class="label-text">Email:</span>
             </label>
-            <input type="text" placeholder="Enter email" class="input input-bordered w-full"
-                   [(ngModel)]="customer.email"
-                   id="email" name="email"/>
+            <input type="email" placeholder="Enter email" class="input input-bordered w-full"
+                   id="email" name="email"
+                    [formControl]="customerForm.controls.email"
+            />
           </div>
 
           <!-- This input collects the phone number of the customer -->
@@ -94,8 +97,9 @@
               <span class="label-text">Phone Number:</span>
             </label>
             <input type="text" placeholder="Enter phone number" class="input input-bordered w-full"
-                   [(ngModel)]="customer.phoneNumber"
-                   id="phoneNumber" name="phoneNumber"/>
+                   id="phoneNumber" name="phoneNumber"
+                   [formControl]="customerForm.controls.phoneNumber"
+            />
           </div>
 
           <div class="divider">Address:</div>
@@ -106,8 +110,9 @@
               <span class="label-text">Street Name:</span>
             </label>
             <input type="text" placeholder="Enter street name" class="input input-bordered w-full"
-                   [(ngModel)]="address.streetName"
-                   id="streetName" name="streetName"/>
+                   id="streetName" name="streetName"
+                   [formControl]="addressForm.controls.streetName"
+            />
           </div>
           <div class="flex gap-3">
 
@@ -117,8 +122,9 @@
                 <span class="label-text">House Number:</span>
               </label>
               <input type="number" placeholder="Enter house number" class="input input-bordered w-full"
-                     [(ngModel)]="address.houseNumber"
-                     id="houseNumber" name="houseNumber" required/>
+                     id="houseNumber" name="houseNumber"
+                     [formControl]="addressForm.controls.houseNumber"
+                     required/>
             </div>
 
             <!-- This input collects the house number addition of the customer's address -->
@@ -127,8 +133,9 @@
                 <span class="label-text">House Number Addition:</span>
               </label>
               <input type="text" placeholder="Enter house number addition" class="input input-bordered w-full"
-                     [(ngModel)]="address.houseNumberAddition"
-                     id="houseNumberAddition" name="houseNumberAddition"/>
+                     id="houseNumberAddition" name="houseNumberAddition"
+                     [formControl]="addressForm.controls.houseNumberAddition"
+              />
             </div>
 
           </div>
@@ -140,8 +147,10 @@
               <label class="label">
                 <span class="label-text">City:</span>
               </label>
-              <input type="text" placeholder="Enter city" class="input input-bordered w-full" [(ngModel)]="address.city"
-                     id="city" name="city"/>
+              <input type="text" placeholder="Enter city" class="input input-bordered w-full"
+                     id="city" name="city"
+                     [formControl]="addressForm.controls.city"
+              />
             </div>
 
             <!-- This input collects the postal code of the customer's address -->
@@ -150,8 +159,9 @@
                 <span class="label-text">Postal Code:</span>
               </label>
               <input type="text" placeholder="Enter postal code" class="input input-bordered w-full"
-                     [(ngModel)]="address.postalCode"
-                     id="postalCode" name="postalCode"/>
+                     id="postalCode" name="postalCode"
+                     [formControl]="addressForm.controls.postalCode"
+              />
             </div>
 
           </div>
@@ -162,13 +172,16 @@
               <span class="label-text">Country:</span>
             </label>
             <input type="text" placeholder="Enter country" class="input input-bordered w-full"
-                   [(ngModel)]="address.country"
-                   id="country" name="country"/>
+                   id="country" name="country"
+                   [formControl]="addressForm.controls.country"
+            />
           </div>
 
         </div>
 
-        <button class="btn btn-primary" type="submit" onclick="create_order.close()">
+        <button class="btn btn-primary" type="submit" onclick="create_order.close()"
+                [disabled]="!customerForm.valid || !addressForm.valid || Object.keys(addedBoxes).length < 1"
+        >
           Create Order
         </button>
       </form>
