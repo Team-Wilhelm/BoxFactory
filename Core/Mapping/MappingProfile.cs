@@ -1,5 +1,4 @@
 using AutoMapper;
-using Models;
 using Models.DTOs;
 using Models.Models;
 
@@ -14,7 +13,7 @@ public class MappingProfile : Profile
                 opt => opt
                     .MapFrom(src => new Dimensions
                     {
-                        Length = src.DimensionsDto.Length,
+                        Length = src.DimensionsDto!.Length,
                         Width = src.DimensionsDto.Width,
                         Height = src.DimensionsDto.Height
                     }))
@@ -25,7 +24,7 @@ public class MappingProfile : Profile
                 opt => opt
                     .MapFrom(src => new Dimensions
                     {
-                        Length = src.DimensionsDto.Length,
+                        Length = src.DimensionsDto!.Length,
                         Width = src.DimensionsDto.Width,
                         Height = src.DimensionsDto.Height
                     }))
