@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 using Models.Models;
 using Newtonsoft.Json;
 
@@ -10,12 +9,16 @@ namespace Tests.BackendTests;
 
 public class CreateTests
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
+
+    public CreateTests(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     [SetUp]
     public void Setup()
     {
-        _httpClient = new HttpClient();
     }
 
     [Test]
@@ -63,7 +66,7 @@ public class CreateTests
                     .Excluding(b => b.CreatedAt);
             });
             
-            box.DimensionsDto.Length.Should().Be(responseBox.Dimensions.Length);
+            box.DimensionsDto!.Length.Should().Be(responseBox.Dimensions!.Length);
             box.DimensionsDto.Width.Should().Be(responseBox.Dimensions.Width);
             box.DimensionsDto.Height.Should().Be(responseBox.Dimensions.Height);
         }

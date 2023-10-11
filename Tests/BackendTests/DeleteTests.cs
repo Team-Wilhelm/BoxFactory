@@ -7,12 +7,16 @@ namespace Tests.BackendTests;
 
 public class DeleteTests
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
+
+    public DeleteTests(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     [SetUp]
     public void Setup()
     {
-        _httpClient = new HttpClient();
     }
     
     [Test]

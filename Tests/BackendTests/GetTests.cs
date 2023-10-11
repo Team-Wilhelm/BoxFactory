@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using Models;
 using Models.Models;
 using Newtonsoft.Json;
 
@@ -8,12 +7,16 @@ namespace Tests.BackendTests;
 
 public class GetTests
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
+
+    public GetTests(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     [SetUp]
     public void Setup()
     {
-        _httpClient = new HttpClient();
     }
     
      [Test]
