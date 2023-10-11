@@ -10,7 +10,7 @@ export class BoxListComponent {
   constructor(private boxService: BoxService) {
   }
   onSearchClick(value: string) {
-    this.boxService.get(value);
+    this.boxService.get(1, value);
     console.log(value); // For testing purpose
   }
 }

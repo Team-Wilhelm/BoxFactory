@@ -56,3 +56,14 @@
   </tr>
   </tfoot>
 </table>
+
+<div class="w-full text-center">
+  <div class="join m-auto">
+    <button *ngFor="let button of buttons; let index = index"
+            class="join-item btn"
+            [ngClass]="{'btn-active': index === currentPage}"
+            (click)="getNextPage(index)">
+      {{index + 1}}
+    </button>
+  </div>
+</div>

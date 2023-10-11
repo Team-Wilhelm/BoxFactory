@@ -1,5 +1,11 @@
 import {Dimensions, DimensionsDto} from "./dimension-interface";
 
+
+export interface PaginatedBoxList {
+  boxes: Box[];
+  pageCount: number;
+}
+
 export interface Box {
   id: string; // Guids are represented as strings in Typescript
   weight: number; // float numbers are represented as number type in TypeScript

@@ -37,7 +37,7 @@ export class CreateorderComponent {
   });
 
   constructor(public boxService: BoxService, public orderService: OrderService) {
-    this.boxService.get().then(boxes => this.boxes = this.boxService.boxes);
+    this.boxService.get(1).then(boxes => this.boxes = this.boxService.boxes);
     this.order = {
       boxes: {},
       customer: { simpsonImgUrl:"" }
