@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
 using Models.Models;
+using Models.Util;
 using Newtonsoft.Json;
 
 namespace Tests.BackendTests;
@@ -39,8 +40,8 @@ public class GetTests
         IEnumerable<Box> dbBoxes;
         try
         {
-            dbBoxes = JsonConvert.DeserializeObject<IEnumerable<Box>>(await response.Content.ReadAsStringAsync()) ??
-                      throw new InvalidOperationException();
+            dbBoxes = JsonConvert.DeserializeObject<GetBoxesResponse>(
+                await response.Content.ReadAsStringAsync())!.Boxes ?? throw new InvalidOperationException();
         }
         catch (Exception e)
         {
