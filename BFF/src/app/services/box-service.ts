@@ -1,22 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {firstValueFrom, Observable} from 'rxjs';
-import {Box, BoxCreateDto, BoxUpdateDto} from "../interfaces/box-inteface";
+import {Box, BoxCreateDto, BoxUpdateDto, PaginatedBoxList} from "../interfaces/box-inteface";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoxService {
   boxes: Box[] = [];
+  pageSize: string = "10";
+  public pageCount?: number;
+
   private apiUrl = 'http://localhost:5133/box';
 
   constructor(private http: HttpClient) {
-    this.get();
+    this.get(1,this.pageSize);
   }
 
-  async get(searchTerm?: string) {
-    const call = this.http.get<Box[]>(`${this.apiUrl}?boxesPerPage=1000&searchTerm=${searchTerm ?? ''}`);
-    this.boxes = await firstValueFrom<Box[]>(call);
+  async get(currentPage:number, count?: string | "10",  searchTerm?: string) {
+    const call = this.http.get<PaginatedBoxList>(`${this.apiUrl}?currentPage=${currentPage}&boxesPerPage=${count}&searchTerm=${searchTerm ?? ''}`);
+    let result = await firstValueFrom(call);
+    this.boxes = result.boxes;
+    this.pageCount = result.pageCount;
+    return result;
   }
 
   public getbyId(id: string) {
