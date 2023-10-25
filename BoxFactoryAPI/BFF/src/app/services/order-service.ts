@@ -8,7 +8,7 @@ import {Order, OrderCreateDto, ShippingStatusDto} from "../interfaces/order-inte
 })
 export class OrderService {
   orders: Order[] = [];
-  private apiUrl = 'http://localhost:5133/Order';
+  private apiUrl = 'https://boxyfactory.azurewebsites.net/Order';
 
   constructor(private http: HttpClient) {
     this.get();
