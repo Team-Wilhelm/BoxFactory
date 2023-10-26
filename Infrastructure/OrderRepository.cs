@@ -15,7 +15,7 @@ public class OrderRepository
         _dbConnection = dbConnection;
         _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ?  "testing"
-            :  "production";
+            :  "Production";
     }
 
     public async Task<Order> Create(OrderCreateDto orderToCreate, DateTime? date = null)

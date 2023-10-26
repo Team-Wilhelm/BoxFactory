@@ -17,7 +17,7 @@ public class BoxRepository
         _dbConnection = dbConnection;
         _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ? "testing"
-            : "production";
+            : "Production";
         _colours = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.colours").ToList();
         _materials = _dbConnection.Query<string>($"SELECT name FROM {_databaseSchema}.materials").ToList();
     }

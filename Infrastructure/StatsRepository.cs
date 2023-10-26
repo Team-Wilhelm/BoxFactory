@@ -14,7 +14,7 @@ public class StatsRepository
         _dbConnection = dbConnection;
         _databaseSchema = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
             ? "testing"
-            : "production";
+            : "Production";
     }
 
     public async Task<Dictionary<int,int>> GetStats()

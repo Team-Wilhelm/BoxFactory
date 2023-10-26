@@ -35,9 +35,6 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var frontEndRelativePath = "BFF/dist/bff";
-builder.Services.AddSpaStaticFiles(conf => conf.RootPath = frontEndRelativePath);
-
 var app = builder.Build();
 
 app.UseCors(options =>
@@ -66,12 +63,6 @@ if (app.Environment.IsDevelopment())
         await dbInitializer.InitializeData();
     }
 }
-
-app.UseSpaStaticFiles();
-app.UseSpa(conf =>
-{
-    conf.Options.SourcePath = frontEndRelativePath;
-});
 
 
 if (app.Environment.IsDevelopment())
