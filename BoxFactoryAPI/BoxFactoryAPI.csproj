@@ -18,6 +18,7 @@
         <PackageReference Include="Dapper.Extensions.PostgreSQL" Version="4.2.4" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.5.23302.2"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.0-rc.2.23480.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -35,6 +35,9 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var frontEndRelativePath = "BFF/dist/bff";
+builder.Services.AddSpaStaticFiles(conf => conf.RootPath = frontEndRelativePath);
+
 var app = builder.Build();
 
 app.UseCors(options =>
@@ -64,6 +67,12 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseSpaStaticFiles();
+app.UseSpa(conf =>
+{
+    conf.Options.SourcePath = frontEndRelativePath;
+});
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -76,5 +85,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 
 app.Run();
